@@ -1,0 +1,2 @@
+<?php
+// Form helper shim
