@@ -24,7 +24,7 @@
         <div>
             <div class="doc-sub mb-2">Commercial export document</div>
             <h2>COMMERCIAL INVOICE</h2>
-            <div class="mt-3"><strong><?= e($company['company_name'] ?? 'UCO Trading Solution'); ?></strong></div>
+            <div class="mt-3"><strong><?= e($company['company_name'] ?? 'UCO Exportindo Consulting'); ?></strong></div>
             <div class="doc-sub"><?= nl2br(e($company['address'] ?? '')); ?></div>
         </div>
         <div class="text-end">

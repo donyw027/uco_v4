@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title><?= e($title ?? 'UCO Trading Solution'); ?></title>
+  <title><?= e($title ?? 'UCO Exportindo Consulting'); ?></title>
   <link rel="icon" href="<?= base_url('assets/img/favicon.png'); ?>">
   <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
@@ -291,14 +291,14 @@
   <div id="preloader"><img src="<?= base_url('assets/img/uco.png'); ?>" class="loader-logo" alt="UCO"></div>
   <div class="topbar py-2">
     <div class="container d-flex flex-wrap justify-content-between gap-2">
-      <div><i class="fa-solid fa-envelope me-2"></i><a href="mailto:sales@ucotradingsolution.com">sales@ucotradingsolution.com</a></div>
-      <div><i class="fa-solid fa-globe me-2"></i>Reliable partner for used cooking oil export and documentation flow</div>
+      <div><i class="fa-solid fa-envelope me-2"></i><a href="mailto:sales@ucoexportindo.com">sales@ucoexportindo.com</a></div>
+      <div><i class="fa-solid fa-globe me-2"></i>Reliable partner for used cooking oil export </div>
     </div>
   </div>
   <header class="site-header">
     <nav class="navbar navbar-expand-lg py-3">
       <div class="container">
-        <a href="<?= site_url(); ?>" class="navbar-brand">UCO <span>Trading Solution</span></a>
+        <a href="<?= site_url(); ?>" class="navbar-brand">UCO <span>Exportindo Consulting</span></a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"><span class="navbar-toggler-icon"></span></button>
         <div class="collapse navbar-collapse" id="mainNav">
           <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
@@ -306,7 +306,7 @@
             <li class="nav-item"><a class="nav-link" href="<?= site_url('about'); ?>">About</a></li>
             <li class="nav-item"><a class="nav-link" href="<?= site_url('products'); ?>">Products</a></li>
             <li class="nav-item"><a class="nav-link" href="<?= site_url('contact'); ?>">Contact</a></li>
-            <li class="nav-item ms-lg-2"><a href="mailto:sales@ucotradingsolution.com" class="btn btn-quote">Send Inquiry</a></li>
+            <li class="nav-item ms-lg-2"><a href="mailto:sales@UCO Exportindo Consulting.com" class="btn btn-quote">Send Inquiry</a></li>
           </ul>
         </div>
       </div>

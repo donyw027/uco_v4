@@ -52,7 +52,7 @@
                     <div class="text-muted small">Gambaran elemen yang akan muncul pada dokumen print.</div>
                 </div>
                 <div class="card-body d-grid gap-3">
-                    <div class="metric-mini"><div><div class="label">Company</div><div class="big"><?= e($row['company_name'] ?? 'UCO Trading Solution'); ?></div></div><i class="bi bi-buildings fs-4 text-primary"></i></div>
+                    <div class="metric-mini"><div><div class="label">Company</div><div class="big"><?= e($row['company_name'] ?? 'UCO Exportindo Consulting'); ?></div></div><i class="bi bi-buildings fs-4 text-primary"></i></div>
                     <div class="metric-mini"><div><div class="label">Email</div><div class="big" style="font-size:1rem;"><?= e($row['email'] ?? 'company@email.com'); ?></div></div><i class="bi bi-envelope fs-4 text-success"></i></div>
                     <div class="metric-mini"><div><div class="label">Phone</div><div class="big" style="font-size:1rem;"><?= e($row['phone'] ?? '-'); ?></div></div><i class="bi bi-telephone fs-4 text-warning"></i></div>
                     <div class="quick-note">

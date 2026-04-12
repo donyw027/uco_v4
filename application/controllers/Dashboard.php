@@ -1,5 +1,5 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
 class Dashboard extends MY_Controller
 {
@@ -12,7 +12,7 @@ class Dashboard extends MY_Controller
 
     public function index()
     {
-        $data['page_title'] = 'Executive Dashboard';
+        $data['page_title'] = 'Dashboard';
         $data['stats'] = $this->dash->stats();
         $data['monthly_revenue'] = $this->dash->monthly_revenue();
         $data['yearly_revenue'] = $this->dash->yearly_revenue();
