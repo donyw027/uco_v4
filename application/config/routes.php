@@ -32,3 +32,6 @@ $route['transactions/inquiries'] = 'transactions/inquiries';
 $route['transactions/inquiries'] = 'transactions/inquiries';
 $route['transactions/print-manual-inquiry/(:num)'] = 'transactions/print_manual_inquiry/$1';
 $route['transactions/print-manual-inquiry-draft'] = 'transactions/print_manual_inquiry_draft';
+
+$route['transactions/delete-manual-invoice/(:num)'] = 'transactions/delete_manual_invoice/$1';
+$route['transactions/delete-manual-inquiry/(:num)'] = 'transactions/delete_manual_inquiry/$1';

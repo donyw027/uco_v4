@@ -183,6 +183,10 @@
                                     <td class="text-end fw-semibold"><?= format_money($row['total_amount']); ?></td>
                                     <td>
                                         <a href="<?= site_url('transactions/print-manual-invoice/' . $row['id']); ?>" target="_blank" class="btn btn-sm btn-success">Print</a>
+
+                                        <a href="<?= site_url('transactions/delete-manual-invoice/' . $row['id']); ?>"
+                                            onclick="return confirm('Delete this invoice?')"
+                                            class="btn btn-sm btn-danger">Delete</a>
                                     </td>
                                 </tr>
                         <?php endforeach;

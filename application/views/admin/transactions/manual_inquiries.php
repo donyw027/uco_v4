@@ -162,6 +162,10 @@
                                     <td><?= e($row['subject']); ?></td>
                                     <td>
                                         <a href="<?= site_url('transactions/print-manual-inquiry/' . $row['id']); ?>" target="_blank" class="btn btn-sm btn-success">Print</a>
+
+                                        <a href="<?= site_url('transactions/delete-manual-inquiry/' . $row['id']); ?>"
+                                            onclick="return confirm('Delete this inquiry?')"
+                                            class="btn btn-sm btn-danger">Delete</a>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

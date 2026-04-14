@@ -86,6 +86,22 @@ class Transactions extends MY_Controller
         $this->load->view('admin/transactions/print_manual_inquiry', $data);
     }
 
+    public function delete_manual_invoice($id)
+    {
+        $this->db->delete('manual_invoices', ['id' => $id]);
+
+        $this->session->set_flashdata('success', 'Manual invoice deleted.');
+        redirect('transactions/manual-invoices');
+    }
+
+    public function delete_manual_inquiry($id)
+    {
+        $this->db->delete('manual_inquiries', ['id' => $id]);
+
+        $this->session->set_flashdata('success', 'Inquiry deleted.');
+        redirect('transactions/inquiries');
+    }
+
     public function print_manual_inquiry_draft()
     {
         $draft = $this->session->userdata('manual_inquiry_draft');
