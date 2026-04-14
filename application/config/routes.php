@@ -1,5 +1,5 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
 $route['default_controller'] = 'welcome';
 $route['404_override'] = '';
@@ -22,3 +22,13 @@ $route['transactions/so-detail/(:num)'] = 'transactions/so_detail/$1';
 $route['transactions/print-invoice/(:num)'] = 'transactions/print_invoice/$1';
 $route['transactions/print-packing-list/(:num)'] = 'transactions/print_packing_list/$1';
 $route['settings/company'] = 'settings/company';
+
+
+$route['transactions/manual-invoices'] = 'transactions/manual_invoices';
+$route['transactions/print-manual-invoice/(:num)'] = 'transactions/print_manual_invoice/$1';
+$route['transactions/print-manual-invoice-draft'] = 'transactions/print_manual_invoice_draft';
+$route['transactions/inquiries'] = 'transactions/inquiries';
+
+$route['transactions/inquiries'] = 'transactions/inquiries';
+$route['transactions/print-manual-inquiry/(:num)'] = 'transactions/print_manual_inquiry/$1';
+$route['transactions/print-manual-inquiry-draft'] = 'transactions/print_manual_inquiry_draft';

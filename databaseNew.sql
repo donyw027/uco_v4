@@ -43,7 +43,7 @@ INSERT INTO `company_profile` (`id`, `company_name`, `address`, `phone`, `email`
 	(7, 'UCO Trading Solution Demo 7', 'Jl. Demo Company No. 7, Pasuruan', '+62-343-500007', 'info7@uco-demo.test', 'Bank Demo 7 - 12345678907', 'Manager 7', 'Export Manager 7'),
 	(8, 'UCO Trading Solution Demo 8', 'Jl. Demo Company No. 8, Pasuruan', '+62-343-500008', 'info8@uco-demo.test', 'Bank Demo 8 - 12345678908', 'Manager 8', 'Export Manager 8'),
 	(9, 'UCO Trading Solution Demo 9', 'Jl. Demo Company No. 9, Pasuruan', '+62-343-500009', 'info9@uco-demo.test', 'Bank Demo 9 - 12345678909', 'Manager 9', 'Export Manager 9'),
-	(10, 'UCO Trading Solution', 'Jl. Company No. 10, Pasuruan', '+62-343-500010', 'info10@ucotradingsolution.com', 'Bank BCA10 - 12345678910', 'Doni', 'Director');
+	(10, 'Uco Exportindo Constulting', 'Perum Majapahit, Pungging – Mojokerto', '+62-896-7257-4222', 'ucoexporindo@gmail.com', 'Bank BCA10 - 12345678910', 'Dika Tri M', 'Director');
 
 -- Dumping structure for table uco_v4.currencies
 CREATE TABLE IF NOT EXISTS `currencies` (
@@ -118,7 +118,7 @@ INSERT INTO `document_sequences` (`id`, `doc_type`, `yyyymm`, `last_number`) VAL
 	(10, 'SJ', '202603', 10),
 	(11, 'PL', '202604', 3),
 	(12, 'SO', '202604', 1),
-	(13, 'INV', '202604', 1);
+	(13, 'INV', '202604', 29);
 
 -- Dumping structure for table uco_v4.incoterms
 CREATE TABLE IF NOT EXISTS `incoterms` (
@@ -204,6 +204,92 @@ INSERT INTO `invoice_items` (`id`, `invoice_id`, `sales_order_item_id`, `qty`, `
 	(13, 11, 23, 3.00, 10250.00, 30750.00),
 	(14, 12, 24, 12.00, 7800.00, 93600.00),
 	(15, 12, 25, 33.00, 7800.00, 257400.00);
+
+-- Dumping structure for table uco_v4.manual_inquiries
+CREATE TABLE IF NOT EXISTS `manual_inquiries` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `proposal_no` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `proposal_date` date NOT NULL,
+  `recipient_company` varchar(150) COLLATE utf8mb4_general_ci NOT NULL,
+  `recipient_address` text COLLATE utf8mb4_general_ci,
+  `recipient_pic` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `subject` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `opening_text` text COLLATE utf8mb4_general_ci,
+  `terms_text` text COLLATE utf8mb4_general_ci,
+  `closing_text` text COLLATE utf8mb4_general_ci,
+  `currency_text` varchar(20) COLLATE utf8mb4_general_ci DEFAULT 'IDR',
+  `created_by` int DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `proposal_no` (`proposal_no`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Dumping data for table uco_v4.manual_inquiries: ~0 rows (approximately)
+INSERT INTO `manual_inquiries` (`id`, `proposal_no`, `proposal_date`, `recipient_company`, `recipient_address`, `recipient_pic`, `subject`, `opening_text`, `terms_text`, `closing_text`, `currency_text`, `created_by`, `created_at`) VALUES
+	(1, 'INQ-UCO/202604/8801', '2026-04-14', 'PT. CANADA GREEN GATE', 'Pasuruan – Indonesia', 'PIC', 'Pengurusan Izin Penambahan Barang Jadi Kategori DHE SDA', 'Bersama ini kami menyampaikan penawaran jasa pengurusan perizinan penambahan barang jadi kategori DHE SDA yang akan berhubungan dengan KPPBC Pusat serta Kementerian Perdagangan Republik Indonesia.', '• Pembayaran: 30% saat SPK, 70% setelah izin terbit\r\n• Dokumen disiapkan oleh pihak perusahaan\r\n• Biaya belum termasuk perubahan regulasi tambahan', 'Demikian proposal ini kami sampaikan. Kami berharap dapat menjalin kerja sama yang baik dengan perusahaan Bapak/Ibu.', 'IDR', 1, '2026-04-14 13:04:38');
+
+-- Dumping structure for table uco_v4.manual_inquiry_items
+CREATE TABLE IF NOT EXISTS `manual_inquiry_items` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `manual_inquiry_id` int NOT NULL,
+  `description` text COLLATE utf8mb4_general_ci NOT NULL,
+  `agency` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `duration_text` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `amount` decimal(18,2) NOT NULL DEFAULT '0.00',
+  PRIMARY KEY (`id`),
+  KEY `manual_inquiry_id` (`manual_inquiry_id`),
+  CONSTRAINT `fk_manual_inquiry_items_header` FOREIGN KEY (`manual_inquiry_id`) REFERENCES `manual_inquiries` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Dumping data for table uco_v4.manual_inquiry_items: ~0 rows (approximately)
+INSERT INTO `manual_inquiry_items` (`id`, `manual_inquiry_id`, `description`, `agency`, `duration_text`, `amount`) VALUES
+	(1, 1, 'Registrasi & Izin Penambahan Barang Jadi (Calcium Soap & Shortening)', 'KPPBC Pusat & Kemendag', '±5 Hari Kerja', 32000000.00);
+
+-- Dumping structure for table uco_v4.manual_invoices
+CREATE TABLE IF NOT EXISTS `manual_invoices` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `invoice_no` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `invoice_date` date NOT NULL,
+  `customer_name` varchar(150) COLLATE utf8mb4_general_ci NOT NULL,
+  `customer_address` text COLLATE utf8mb4_general_ci,
+  `customer_country` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `pic_name` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `currency_id` int DEFAULT NULL,
+  `incoterm_id` int DEFAULT NULL,
+  `payment_term_id` int DEFAULT NULL,
+  `subject` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `notes` text COLLATE utf8mb4_general_ci,
+  `total_amount` decimal(18,2) NOT NULL DEFAULT '0.00',
+  `created_by` int DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `invoice_no` (`invoice_no`),
+  KEY `currency_id` (`currency_id`),
+  KEY `incoterm_id` (`incoterm_id`),
+  KEY `payment_term_id` (`payment_term_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Dumping data for table uco_v4.manual_invoices: ~0 rows (approximately)
+INSERT INTO `manual_invoices` (`id`, `invoice_no`, `invoice_date`, `customer_name`, `customer_address`, `customer_country`, `pic_name`, `currency_id`, `incoterm_id`, `payment_term_id`, `subject`, `notes`, `total_amount`, `created_by`, `created_at`) VALUES
+	(1, 'INV-UCO/202604/0029', '2026-04-14', 'Canada green', 'dsadas', 'dsadsa', 'dsa', 8, 4, 0, 'sdasda', 'dsadsadasads', 21313.00, 1, '2026-04-14 12:54:25');
+
+-- Dumping structure for table uco_v4.manual_invoice_items
+CREATE TABLE IF NOT EXISTS `manual_invoice_items` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `manual_invoice_id` int NOT NULL,
+  `description` text COLLATE utf8mb4_general_ci NOT NULL,
+  `qty` decimal(18,2) NOT NULL DEFAULT '0.00',
+  `unit` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `unit_price` decimal(18,2) NOT NULL DEFAULT '0.00',
+  `amount` decimal(18,2) NOT NULL DEFAULT '0.00',
+  PRIMARY KEY (`id`),
+  KEY `manual_invoice_id` (`manual_invoice_id`),
+  CONSTRAINT `fk_manual_invoice_items_header` FOREIGN KEY (`manual_invoice_id`) REFERENCES `manual_invoices` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Dumping data for table uco_v4.manual_invoice_items: ~0 rows (approximately)
+INSERT INTO `manual_invoice_items` (`id`, `manual_invoice_id`, `description`, `qty`, `unit`, `unit_price`, `amount`) VALUES
+	(1, 1, 'sdasda', 1.00, '12', 21313.00, 21313.00);
 
 -- Dumping structure for table uco_v4.packing_lists
 CREATE TABLE IF NOT EXISTS `packing_lists` (

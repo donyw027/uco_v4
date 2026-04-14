@@ -287,6 +287,20 @@ $master_menu_open = $nav_active([
           <span>Invoices</span>
         </a>
 
+        <div class="nav-section-title">Generate document</div>
+
+        <a class="nav-link <?= $nav_active(['transactions/inquiries']); ?>" href="<?= site_url('transactions/inquiries'); ?>">
+          <i class="bi bi-receipt"></i>
+          <span>Inquiry</span>
+        </a>
+
+        <a class="nav-link <?= $nav_active(['transactions/manual-invoices']); ?>" href="<?= site_url('transactions/manual-invoices'); ?>">
+          <i class="bi bi-file-earmark-text"></i>
+          <span>Invoices</span>
+        </a>
+
+
+
         <div class="nav-section-title">Inventory</div>
 
         <a class="nav-link <?= $nav_active(['inventory/stock']); ?>" href="<?= site_url('inventory/stock'); ?>">

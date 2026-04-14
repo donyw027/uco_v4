@@ -1,5 +1,5 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
 class Transactions extends MY_Controller
 {
@@ -9,9 +9,238 @@ class Transactions extends MY_Controller
         $this->require_login();
         $this->load->model('Sales_order_model', 'so');
         $this->load->model('Packing_list_model', 'pl');
+        $this->load->model('Manual_invoice_model', 'manual_inv');
         $this->load->model('Invoice_model', 'inv');
         $this->load->model('Inventory_model', 'inventory');
+        $this->load->model('Manual_inquiry_model', 'manual_inquiry');
         $this->load->model('Company_model', 'company');
+    }
+
+    public function inquiries()
+    {
+        if ($this->input->method() === 'post') {
+            $action = $this->input->post('submit_action');
+
+            $proposal_no = trim((string)$this->input->post('proposal_no'));
+            if ($proposal_no === '') {
+                $proposal_no = 'INQ-UCO/' . date('Ym') . '/' . str_pad((string)rand(1, 9999), 4, '0', STR_PAD_LEFT);
+            }
+
+            $header = [
+                'proposal_no'       => $proposal_no,
+                'proposal_date'     => $this->input->post('proposal_date') ?: date('Y-m-d'),
+                'recipient_company' => $this->input->post('recipient_company', true),
+                'recipient_address' => $this->input->post('recipient_address', true),
+                'recipient_pic'     => $this->input->post('recipient_pic', true),
+                'subject'           => $this->input->post('subject', true),
+                'opening_text'      => $this->input->post('opening_text', true),
+                'terms_text'        => $this->input->post('terms_text', true),
+                'closing_text'      => $this->input->post('closing_text', true),
+                'currency_text'     => $this->input->post('currency_text', true) ?: 'IDR',
+                'created_by'        => $this->user['id'] ?? null,
+            ];
+
+            $items = [];
+            foreach ((array)$this->input->post('description') as $i => $desc) {
+                $items[] = [
+                    'description'   => $desc,
+                    'agency'        => $this->input->post('agency')[$i] ?? '',
+                    'duration_text' => $this->input->post('duration_text')[$i] ?? '',
+                    'amount'        => (float)($this->input->post('amount')[$i] ?? 0),
+                ];
+            }
+
+            if ($action === 'save_print') {
+                $saved_id = $this->manual_inquiry->create($header, $items);
+
+                if ($saved_id) {
+                    $this->session->set_flashdata('success', 'Inquiry berhasil disimpan.');
+                    redirect('transactions/print-manual-inquiry/' . $saved_id);
+                }
+
+                $this->session->set_flashdata('error', 'Gagal menyimpan inquiry.');
+                redirect('transactions/inquiries');
+            }
+
+            if ($action === 'print_only') {
+                $draft = [
+                    'header' => $header,
+                    'items'  => $items,
+                ];
+                $this->session->set_userdata('manual_inquiry_draft', $draft);
+                redirect('transactions/print-manual-inquiry-draft');
+            }
+        }
+
+        $data['page_title'] = 'Inquiries';
+        $data['rows'] = $this->manual_inquiry->rows();
+        $this->render('admin/transactions/manual_inquiries', $data);
+    }
+
+    public function print_manual_inquiry($id)
+    {
+        $data['company'] = $this->company->latest();
+        $data['inq'] = $this->manual_inquiry->get($id);
+        $data['items'] = $this->manual_inquiry->items($id);
+
+        $this->load->view('admin/transactions/print_manual_inquiry', $data);
+    }
+
+    public function print_manual_inquiry_draft()
+    {
+        $draft = $this->session->userdata('manual_inquiry_draft');
+        if (!$draft) {
+            $this->session->set_flashdata('error', 'Draft inquiry tidak ditemukan.');
+            redirect('transactions/inquiries');
+        }
+
+        $data['company'] = $this->company->latest();
+        $data['inq'] = $draft['header'];
+        $data['items'] = array_values(array_filter($draft['items'], function ($it) {
+            return trim((string)$it['description']) !== '';
+        }));
+
+        $this->session->unset_userdata('manual_inquiry_draft');
+        $this->load->view('admin/transactions/print_manual_inquiry', $data);
+    }
+
+    public function manual_invoices()
+    {
+        if ($this->input->method() === 'post') {
+            $action = $this->input->post('submit_action');
+
+            $invoice_no = trim((string)$this->input->post('invoice_no'));
+            if ($invoice_no === '') {
+                $invoice_no = $this->so->next_doc_no('INV', 'INV-UCO');
+            }
+
+            $header = [
+                'invoice_no'       => $invoice_no,
+                'invoice_date'     => $this->input->post('invoice_date') ?: date('Y-m-d'),
+                'customer_name'    => $this->input->post('customer_name', true),
+                'customer_address' => $this->input->post('customer_address', true),
+                'customer_country' => $this->input->post('customer_country', true),
+                'pic_name'         => $this->input->post('pic_name', true),
+                'currency_id'      => (int)$this->input->post('currency_id'),
+                'incoterm_id'      => (int)$this->input->post('incoterm_id'),
+                'payment_term_id'  => (int)$this->input->post('payment_term_id'),
+                'subject'          => $this->input->post('subject', true),
+                'notes'            => $this->input->post('notes', true),
+                'created_by'       => $this->user['id'] ?? null,
+                'total_amount'     => 0,
+            ];
+
+            $items = [];
+            foreach ((array)$this->input->post('description') as $i => $desc) {
+                $items[] = [
+                    'description' => $desc,
+                    'qty'         => (float)($this->input->post('qty')[$i] ?? 0),
+                    'unit'        => $this->input->post('unit')[$i] ?? '',
+                    'unit_price'  => (float)($this->input->post('unit_price')[$i] ?? 0),
+                ];
+            }
+
+            if ($action === 'save_print') {
+                $saved_id = $this->manual_inv->create($header, $items);
+
+                if ($saved_id) {
+                    $this->session->set_flashdata('success', 'Manual invoice berhasil disimpan.');
+                    redirect('transactions/print-manual-invoice/' . $saved_id);
+                }
+
+                $this->session->set_flashdata('error', 'Gagal menyimpan manual invoice.');
+                redirect('transactions/manual-invoices');
+            }
+
+            if ($action === 'print_only') {
+                $draft = [
+                    'header' => $header,
+                    'items'  => $items,
+                ];
+                $this->session->set_userdata('manual_invoice_draft', $draft);
+                redirect('transactions/print-manual-invoice-draft');
+            }
+        }
+
+        $data = $this->so->reference_data();
+        $data['page_title'] = 'Manual Invoices';
+        $data['rows'] = $this->manual_inv->rows();
+        $data['next_invoice_no'] = 'AUTO';
+        $this->render('admin/transactions/manual_invoices', $data);
+    }
+
+    public function print_manual_invoice($id)
+    {
+        $data['company'] = $this->company->latest();
+        $data['inv'] = $this->db->query("
+        SELECT mi.*,
+               cur.currency_code,
+               pt.term_name,
+               ic.incoterm_code
+        FROM manual_invoices mi
+        LEFT JOIN currencies cur ON cur.id = mi.currency_id
+        LEFT JOIN payment_terms pt ON pt.id = mi.payment_term_id
+        LEFT JOIN incoterms ic ON ic.id = mi.incoterm_id
+        WHERE mi.id = ?
+    ", [$id])->row_array();
+
+        $data['items'] = $this->manual_inv->items($id);
+
+        $this->load->view('admin/transactions/print_manual_invoice', $data);
+    }
+
+    public function print_manual_invoice_draft()
+    {
+        $draft = $this->session->userdata('manual_invoice_draft');
+        if (!$draft) {
+            $this->session->set_flashdata('error', 'Draft invoice tidak ditemukan.');
+            redirect('transactions/manual-invoices');
+        }
+
+        $data['company'] = $this->company->latest();
+
+        $currency = $this->db->get_where('currencies', ['id' => (int)($draft['header']['currency_id'] ?? 0)])->row_array();
+        $incoterm = $this->db->get_where('incoterms', ['id' => (int)($draft['header']['incoterm_id'] ?? 0)])->row_array();
+        $payment = $this->db->get_where('payment_terms', ['id' => (int)($draft['header']['payment_term_id'] ?? 0)])->row_array();
+
+        $total = 0;
+        $items = [];
+        foreach ((array)$draft['items'] as $it) {
+            if (trim($it['description']) === '' || (float)$it['qty'] <= 0) {
+                continue;
+            }
+
+            $amount = (float)$it['qty'] * (float)$it['unit_price'];
+            $total += $amount;
+
+            $items[] = [
+                'description' => $it['description'],
+                'qty' => $it['qty'],
+                'unit' => $it['unit'],
+                'unit_price' => $it['unit_price'],
+                'amount' => $amount,
+            ];
+        }
+
+        $data['inv'] = [
+            'invoice_no' => $draft['header']['invoice_no'] ?: 'DRAFT-PREVIEW',
+            'invoice_date' => $draft['header']['invoice_date'],
+            'customer_name' => $draft['header']['customer_name'],
+            'customer_address' => $draft['header']['customer_address'],
+            'customer_country' => $draft['header']['customer_country'],
+            'pic_name' => $draft['header']['pic_name'],
+            'subject' => $draft['header']['subject'],
+            'notes' => $draft['header']['notes'],
+            'currency_code' => $currency['currency_code'] ?? '',
+            'term_name' => $payment['term_name'] ?? '',
+            'incoterm_code' => $incoterm['incoterm_code'] ?? '',
+            'total_amount' => $total,
+        ];
+
+        $data['items'] = $items;
+
+        $this->session->unset_userdata('manual_invoice_draft');
+        $this->load->view('admin/transactions/print_manual_invoice', $data);
     }
 
     public function sales_orders()
@@ -60,7 +289,7 @@ class Transactions extends MY_Controller
             $error = null;
             foreach ($items as $it) {
                 if ($this->inventory->warehouse_stock($it['product_id'], $so['warehouse_id']) < (float)$it['qty']) {
-                    $error = 'Stok untuk '.$it['product_name'].' tidak cukup.';
+                    $error = 'Stok untuk ' . $it['product_name'] . ' tidak cukup.';
                     break;
                 }
             }
