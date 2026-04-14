@@ -184,8 +184,8 @@
                     <div class="soft-box">
                         <div class="mini-label">Commercial Terms</div>
                         <div class="d-grid gap-2">
-                            <div><strong>Payment Term:</strong> <?= e($inv['term_name'] ?? '-'); ?></div>
-                            <div><strong>Incoterm:</strong> <?= e($inv['incoterm_code'] ?? '-'); ?></div>
+                            <div><strong>Payment Term:</strong> <?= e($inv['payment_term_text'] ?? '-'); ?></div>
+                            <div><strong>Incoterm:</strong> <?= e($inv['incoterm_text'] ?? '-'); ?></div>
                             <div><strong>Currency:</strong> <?= e($inv['currency_code'] ?? '-'); ?></div>
                         </div>
                     </div>

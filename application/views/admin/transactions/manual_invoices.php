@@ -48,22 +48,12 @@
 
                     <div class="col-md-3">
                         <label class="form-label">Incoterm</label>
-                        <select name="incoterm_id" class="form-select">
-                            <option value="">- select incoterm -</option>
-                            <?php foreach ($incoterms as $i): ?>
-                                <option value="<?= e($i['id']); ?>"><?= e($i['incoterm_code']); ?></option>
-                            <?php endforeach; ?>
-                        </select>
+                        <input type="text" name="incoterm_text" class="form-control" placeholder="EXW / FOB / Not Applicable / Service Based">
                     </div>
 
                     <div class="col-md-3">
                         <label class="form-label">Payment Term</label>
-                        <select name="payment_term_id" class="form-select">
-                            <option value="">- select payment term -</option>
-                            <?php foreach ($payment_terms as $p): ?>
-                                <option value="<?= e($p['id']); ?>"><?= e($p['term_name']); ?></option>
-                            <?php endforeach; ?>
-                        </select>
+                        <input type="text" name="payment_term_text" class="form-control" placeholder="Net 7 Days / 30% Advance / Full Payment">
                     </div>
 
                     <div class="col-md-8">

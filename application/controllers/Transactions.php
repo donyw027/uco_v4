@@ -137,9 +137,9 @@ class Transactions extends MY_Controller
                 'customer_address' => $this->input->post('customer_address', true),
                 'customer_country' => $this->input->post('customer_country', true),
                 'pic_name'         => $this->input->post('pic_name', true),
-                'currency_id'      => (int)$this->input->post('currency_id'),
-                'incoterm_id'      => (int)$this->input->post('incoterm_id'),
-                'payment_term_id'  => (int)$this->input->post('payment_term_id'),
+                'currency_id'         => (int)$this->input->post('currency_id'),
+                'incoterm_text'       => $this->input->post('incoterm_text', true),
+                'payment_term_text'   => $this->input->post('payment_term_text', true),
                 'subject'          => $this->input->post('subject', true),
                 'notes'            => $this->input->post('notes', true),
                 'created_by'       => $this->user['id'] ?? null,
@@ -190,14 +190,10 @@ class Transactions extends MY_Controller
         $data['company'] = $this->company->latest();
         $data['inv'] = $this->db->query("
         SELECT mi.*,
-               cur.currency_code,
-               pt.term_name,
-               ic.incoterm_code
-        FROM manual_invoices mi
-        LEFT JOIN currencies cur ON cur.id = mi.currency_id
-        LEFT JOIN payment_terms pt ON pt.id = mi.payment_term_id
-        LEFT JOIN incoterms ic ON ic.id = mi.incoterm_id
-        WHERE mi.id = ?
+       cur.currency_code
+FROM manual_invoices mi
+LEFT JOIN currencies cur ON cur.id = mi.currency_id
+WHERE mi.id = ?
     ", [$id])->row_array();
 
         $data['items'] = $this->manual_inv->items($id);
@@ -215,42 +211,43 @@ class Transactions extends MY_Controller
 
         $data['company'] = $this->company->latest();
 
-        $currency = $this->db->get_where('currencies', ['id' => (int)($draft['header']['currency_id'] ?? 0)])->row_array();
-        $incoterm = $this->db->get_where('incoterms', ['id' => (int)($draft['header']['incoterm_id'] ?? 0)])->row_array();
-        $payment = $this->db->get_where('payment_terms', ['id' => (int)($draft['header']['payment_term_id'] ?? 0)])->row_array();
+        $currency = $this->db->get_where('currencies', [
+            'id' => (int)($draft['header']['currency_id'] ?? 0)
+        ])->row_array();
 
         $total = 0;
         $items = [];
+
         foreach ((array)$draft['items'] as $it) {
-            if (trim($it['description']) === '' || (float)$it['qty'] <= 0) {
+            if (trim((string)($it['description'] ?? '')) === '' || (float)($it['qty'] ?? 0) <= 0) {
                 continue;
             }
 
-            $amount = (float)$it['qty'] * (float)$it['unit_price'];
+            $amount = (float)($it['qty'] ?? 0) * (float)($it['unit_price'] ?? 0);
             $total += $amount;
 
             $items[] = [
-                'description' => $it['description'],
-                'qty' => $it['qty'],
-                'unit' => $it['unit'],
-                'unit_price' => $it['unit_price'],
+                'description' => $it['description'] ?? '',
+                'qty' => $it['qty'] ?? 0,
+                'unit' => $it['unit'] ?? '',
+                'unit_price' => $it['unit_price'] ?? 0,
                 'amount' => $amount,
             ];
         }
 
         $data['inv'] = [
-            'invoice_no' => $draft['header']['invoice_no'] ?: 'DRAFT-PREVIEW',
-            'invoice_date' => $draft['header']['invoice_date'],
-            'customer_name' => $draft['header']['customer_name'],
-            'customer_address' => $draft['header']['customer_address'],
-            'customer_country' => $draft['header']['customer_country'],
-            'pic_name' => $draft['header']['pic_name'],
-            'subject' => $draft['header']['subject'],
-            'notes' => $draft['header']['notes'],
-            'currency_code' => $currency['currency_code'] ?? '',
-            'term_name' => $payment['term_name'] ?? '',
-            'incoterm_code' => $incoterm['incoterm_code'] ?? '',
-            'total_amount' => $total,
+            'invoice_no'        => $draft['header']['invoice_no'] ?: 'DRAFT-PREVIEW',
+            'invoice_date'      => $draft['header']['invoice_date'] ?? date('Y-m-d'),
+            'customer_name'     => $draft['header']['customer_name'] ?? '',
+            'customer_address'  => $draft['header']['customer_address'] ?? '',
+            'customer_country'  => $draft['header']['customer_country'] ?? '',
+            'pic_name'          => $draft['header']['pic_name'] ?? '',
+            'subject'           => $draft['header']['subject'] ?? '',
+            'notes'             => $draft['header']['notes'] ?? '',
+            'currency_code'     => $currency['currency_code'] ?? '',
+            'payment_term_text' => $draft['header']['payment_term_text'] ?? '',
+            'incoterm_text'     => $draft['header']['incoterm_text'] ?? '',
+            'total_amount'      => $total,
         ];
 
         $data['items'] = $items;

@@ -43,7 +43,7 @@ INSERT INTO `company_profile` (`id`, `company_name`, `address`, `phone`, `email`
 	(7, 'UCO Trading Solution Demo 7', 'Jl. Demo Company No. 7, Pasuruan', '+62-343-500007', 'info7@uco-demo.test', 'Bank Demo 7 - 12345678907', 'Manager 7', 'Export Manager 7'),
 	(8, 'UCO Trading Solution Demo 8', 'Jl. Demo Company No. 8, Pasuruan', '+62-343-500008', 'info8@uco-demo.test', 'Bank Demo 8 - 12345678908', 'Manager 8', 'Export Manager 8'),
 	(9, 'UCO Trading Solution Demo 9', 'Jl. Demo Company No. 9, Pasuruan', '+62-343-500009', 'info9@uco-demo.test', 'Bank Demo 9 - 12345678909', 'Manager 9', 'Export Manager 9'),
-	(10, 'Uco Exportindo Constulting', 'Perum Majapahit, Pungging – Mojokerto', '+62-896-7257-4222', 'ucoexporindo@gmail.com', 'Bank BCA10 - 12345678910', 'Dika Tri M', 'Director');
+	(10, 'Uco Exportindo Constulting', 'Perum Majapahit, Pungging – Mojokerto', '+62-896-7257-4222', 'ucoexporindo@gmail.com', 'Bank BCA10 - 12345678910', 'Doni Wicaksono', 'Director');
 
 -- Dumping structure for table uco_v4.currencies
 CREATE TABLE IF NOT EXISTS `currencies` (
@@ -118,7 +118,7 @@ INSERT INTO `document_sequences` (`id`, `doc_type`, `yyyymm`, `last_number`) VAL
 	(10, 'SJ', '202603', 10),
 	(11, 'PL', '202604', 3),
 	(12, 'SO', '202604', 1),
-	(13, 'INV', '202604', 29);
+	(13, 'INV', '202604', 36);
 
 -- Dumping structure for table uco_v4.incoterms
 CREATE TABLE IF NOT EXISTS `incoterms` (
@@ -222,7 +222,7 @@ CREATE TABLE IF NOT EXISTS `manual_inquiries` (
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `proposal_no` (`proposal_no`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Dumping data for table uco_v4.manual_inquiries: ~0 rows (approximately)
 INSERT INTO `manual_inquiries` (`id`, `proposal_no`, `proposal_date`, `recipient_company`, `recipient_address`, `recipient_pic`, `subject`, `opening_text`, `terms_text`, `closing_text`, `currency_text`, `created_by`, `created_at`) VALUES
@@ -239,7 +239,7 @@ CREATE TABLE IF NOT EXISTS `manual_inquiry_items` (
   PRIMARY KEY (`id`),
   KEY `manual_inquiry_id` (`manual_inquiry_id`),
   CONSTRAINT `fk_manual_inquiry_items_header` FOREIGN KEY (`manual_inquiry_id`) REFERENCES `manual_inquiries` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Dumping data for table uco_v4.manual_inquiry_items: ~0 rows (approximately)
 INSERT INTO `manual_inquiry_items` (`id`, `manual_inquiry_id`, `description`, `agency`, `duration_text`, `amount`) VALUES
@@ -255,6 +255,8 @@ CREATE TABLE IF NOT EXISTS `manual_invoices` (
   `customer_country` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `pic_name` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `currency_id` int DEFAULT NULL,
+  `payment_term_text` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `incoterm_text` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `incoterm_id` int DEFAULT NULL,
   `payment_term_id` int DEFAULT NULL,
   `subject` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
@@ -267,11 +269,12 @@ CREATE TABLE IF NOT EXISTS `manual_invoices` (
   KEY `currency_id` (`currency_id`),
   KEY `incoterm_id` (`incoterm_id`),
   KEY `payment_term_id` (`payment_term_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table uco_v4.manual_invoices: ~0 rows (approximately)
-INSERT INTO `manual_invoices` (`id`, `invoice_no`, `invoice_date`, `customer_name`, `customer_address`, `customer_country`, `pic_name`, `currency_id`, `incoterm_id`, `payment_term_id`, `subject`, `notes`, `total_amount`, `created_by`, `created_at`) VALUES
-	(1, 'INV-UCO/202604/0029', '2026-04-14', 'Canada green', 'dsadas', 'dsadsa', 'dsa', 8, 4, 0, 'sdasda', 'dsadsadasads', 21313.00, 1, '2026-04-14 12:54:25');
+-- Dumping data for table uco_v4.manual_invoices: ~2 rows (approximately)
+INSERT INTO `manual_invoices` (`id`, `invoice_no`, `invoice_date`, `customer_name`, `customer_address`, `customer_country`, `pic_name`, `currency_id`, `payment_term_text`, `incoterm_text`, `incoterm_id`, `payment_term_id`, `subject`, `notes`, `total_amount`, `created_by`, `created_at`) VALUES
+	(2, 'INV-UCO/202604/0032', '2026-04-14', 'PT. CANADA GREEN GATE', 'Jl. Kraton Industri Raya No.03, Pejangkungan,Kec. Rembang, Pasuruan, Jawa Timur 67152 ', 'Pasuruan – Indonesia', '', 2, '30% saat SPK, 70% setelah izin terbit', NULL, 0, 30, 'Invoice', '-', 32000000.00, 1, '2026-04-14 13:53:15'),
+	(3, 'INV-UCO/202604/0034', '2026-04-14', 'PT. CANADA GREEN GATE', 'Jl. Kraton Industri Raya No.03, Pejangkungan, Kec. Rembang, Pasuruan, Jawa Timur 67152', 'Pasuruan – Indonesia', '', 2, '30% saat SPK, 70% setelah izin terbit', NULL, 0, 30, 'Invoice', '', 35520000.00, 1, '2026-04-14 13:55:22');
 
 -- Dumping structure for table uco_v4.manual_invoice_items
 CREATE TABLE IF NOT EXISTS `manual_invoice_items` (
@@ -285,11 +288,13 @@ CREATE TABLE IF NOT EXISTS `manual_invoice_items` (
   PRIMARY KEY (`id`),
   KEY `manual_invoice_id` (`manual_invoice_id`),
   CONSTRAINT `fk_manual_invoice_items_header` FOREIGN KEY (`manual_invoice_id`) REFERENCES `manual_invoices` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Dumping data for table uco_v4.manual_invoice_items: ~0 rows (approximately)
 INSERT INTO `manual_invoice_items` (`id`, `manual_invoice_id`, `description`, `qty`, `unit`, `unit_price`, `amount`) VALUES
-	(1, 1, 'sdasda', 1.00, '12', 21313.00, 21313.00);
+	(2, 2, 'Registrasi & Izin Penambahan Barang Jadi (Calcium Soap & Shortening)', 1.00, '', 32000000.00, 32000000.00),
+	(3, 3, 'Registrasi & Izin Penambahan Barang Jadi (Calcium Soap & Shortening)', 1.00, '', 32000000.00, 32000000.00),
+	(4, 3, 'Tax (11%)', 1.00, '', 3520000.00, 3520000.00);
 
 -- Dumping structure for table uco_v4.packing_lists
 CREATE TABLE IF NOT EXISTS `packing_lists` (
