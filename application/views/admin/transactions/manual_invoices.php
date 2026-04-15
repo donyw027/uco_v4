@@ -66,9 +66,14 @@
                         <input type="text" name="customer_country" class="form-control">
                     </div>
 
-                    <div class="col-12">
+                    <div class="col-md-9">
                         <label class="form-label">Subject</label>
                         <input type="text" name="subject" class="form-control" placeholder="Example: Consulting Service Invoice">
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label">Paid Amount</label>
+                        <input type="number" step="0.01" min="0" name="paid_amount" class="form-control" value="0">
                     </div>
                 </div>
 
@@ -76,40 +81,50 @@
                     <table class="table table-sm align-middle" id="manual-items-table">
                         <thead>
                             <tr>
-                                <th>Description</th>
-                                <th width="110">Qty</th>
-                                <th width="120">Unit</th>
-                                <th width="170">Unit Price</th>
-                                <th width="170">Amount</th>
-                                <th width="70">#</th>
+                                <th style="min-width:260px;">Description</th>
+                                <th class="text-center" style="width:90px;">Qty</th>
+                                <th class="text-center" style="width:90px;">Unit</th>
+                                <th class="text-end" style="width:140px;">Unit Price</th>
+                                <th class="text-center" style="width:110px;">Discount %</th>
+                                <th class="text-center" style="width:100px;">Tax %</th>
+                                <th class="text-end" style="width:140px;">Amount</th>
+                                <th style="width:60px;"></th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td>
-                                    <input type="text" name="description[]" class="form-control" placeholder="Service description / consulting fee">
+                                    <input type="text" name="description[]" class="form-control" required>
                                 </td>
                                 <td>
-                                    <input type="number" step="0.01" name="qty[]" class="form-control qty" value="1">
+                                    <input type="number" step="0.01" min="0" name="qty[]" class="form-control text-center qty-input" value="1">
                                 </td>
                                 <td>
-                                    <input type="text" name="unit[]" class="form-control" placeholder="Lot / Job / Pcs">
+                                    <input type="text" name="unit[]" class="form-control text-center">
                                 </td>
                                 <td>
-                                    <input type="number" step="0.01" name="unit_price[]" class="form-control price" value="0">
+                                    <input type="number" step="0.01" min="0" name="unit_price[]" class="form-control text-end price-input" value="0">
                                 </td>
                                 <td>
-                                    <input type="text" class="form-control amount" readonly>
+                                    <input type="number" step="0.01" min="0" name="discount_percent[]" class="form-control text-center discount-input" value="0">
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-sm btn-outline-danger remove-row">×</button>
+                                    <input type="number" step="0.01" min="0" name="tax_percent[]" class="form-control text-center tax-input" value="0">
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control text-end item-amount" value="0.00" readonly>
+                                </td>
+                                <td class="text-center">
+                                    <button type="button" class="btn btn-sm btn-danger btn-remove-row">&times;</button>
                                 </td>
                             </tr>
                         </tbody>
                         <tfoot>
                             <tr>
-                                <th colspan="4" class="text-end">Total</th>
-                                <th><input type="text" class="form-control" id="grand-total" readonly></th>
+                                <th colspan="6" class="text-end">Grand Total</th>
+                                <th>
+                                    <input type="text" class="form-control text-end" id="grand-total" value="0.00" readonly>
+                                </th>
                                 <th></th>
                             </tr>
                         </tfoot>
@@ -189,55 +204,109 @@
 </div>
 
 <script>
-    function bindManualRow(row) {
-        const qty = row.querySelector('.qty');
-        const price = row.querySelector('.price');
-        const amount = row.querySelector('.amount');
+    (function() {
+        function parseNum(val) {
+            const num = parseFloat(val);
+            return isNaN(num) ? 0 : num;
+        }
 
-        function calc() {
-            amount.value = ((parseFloat(qty.value) || 0) * (parseFloat(price.value) || 0)).toFixed(2);
+        function recalcRow(row) {
+            const qty = parseNum(row.querySelector('.qty-input')?.value);
+            const unitPrice = parseNum(row.querySelector('.price-input')?.value);
+            const discountPercent = parseNum(row.querySelector('.discount-input')?.value);
+            const taxPercent = parseNum(row.querySelector('.tax-input')?.value);
+            const amountInput = row.querySelector('.item-amount');
+
+            const subtotal = qty * unitPrice;
+            const discountAmount = subtotal * (discountPercent / 100);
+            const dpp = subtotal - discountAmount;
+            const taxAmount = dpp * (taxPercent / 100);
+            const amount = dpp + taxAmount;
+
+            if (amountInput) {
+                amountInput.value = amount.toFixed(2);
+            }
+
             calcGrandTotal();
         }
 
-        qty.addEventListener('input', calc);
-        price.addEventListener('input', calc);
+        function calcGrandTotal() {
+            let total = 0;
+            document.querySelectorAll('#manual-items-table tbody .item-amount').forEach(function(el) {
+                total += parseNum(el.value);
+            });
 
-        row.querySelector('.remove-row').addEventListener('click', () => {
-            if (document.querySelectorAll('#manual-items-table tbody tr').length > 1) {
-                row.remove();
+            const grandTotal = document.getElementById('grand-total');
+            if (grandTotal) {
+                grandTotal.value = total.toFixed(2);
+            }
+        }
+
+        function bindManualRow(row) {
+            row.querySelectorAll('.qty-input, .price-input, .discount-input, .tax-input').forEach(function(input) {
+                input.addEventListener('input', function() {
+                    recalcRow(row);
+                });
+            });
+
+            const removeBtn = row.querySelector('.btn-remove-row');
+            if (removeBtn) {
+                removeBtn.addEventListener('click', function() {
+                    const rows = document.querySelectorAll('#manual-items-table tbody tr');
+                    if (rows.length > 1) {
+                        row.remove();
+                        calcGrandTotal();
+                    }
+                });
+            }
+
+            recalcRow(row);
+        }
+
+        function createNewRow() {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+            <td>
+                <input type="text" name="description[]" class="form-control" required>
+            </td>
+            <td>
+                <input type="number" step="0.01" min="0" name="qty[]" class="form-control text-center qty-input" value="1">
+            </td>
+            <td>
+                <input type="text" name="unit[]" class="form-control text-center">
+            </td>
+            <td>
+                <input type="number" step="0.01" min="0" name="unit_price[]" class="form-control text-end price-input" value="0">
+            </td>
+            <td>
+                <input type="number" step="0.01" min="0" name="discount_percent[]" class="form-control text-center discount-input" value="0">
+            </td>
+            <td>
+                <input type="number" step="0.01" min="0" name="tax_percent[]" class="form-control text-center tax-input" value="0">
+            </td>
+            <td>
+                <input type="text" class="form-control text-end item-amount" value="0.00" readonly>
+            </td>
+            <td class="text-center">
+                <button type="button" class="btn btn-sm btn-danger btn-remove-row">&times;</button>
+            </td>
+        `;
+            return tr;
+        }
+
+        document.querySelectorAll('#manual-items-table tbody tr').forEach(function(row) {
+            bindManualRow(row);
+        });
+
+        const addRowBtn = document.getElementById('add-row');
+        if (addRowBtn) {
+            addRowBtn.addEventListener('click', function() {
+                const tbody = document.querySelector('#manual-items-table tbody');
+                const row = createNewRow();
+                tbody.appendChild(row);
+                bindManualRow(row);
                 calcGrandTotal();
-            }
-        });
-
-        calc();
-    }
-
-    function calcGrandTotal() {
-        let total = 0;
-        document.querySelectorAll('#manual-items-table tbody .amount').forEach(el => {
-            total += parseFloat(el.value || 0);
-        });
-        document.getElementById('grand-total').value = total.toFixed(2);
-    }
-
-    document.querySelectorAll('#manual-items-table tbody tr').forEach(bindManualRow);
-
-    document.getElementById('add-row').addEventListener('click', () => {
-        const tbody = document.querySelector('#manual-items-table tbody');
-        const row = tbody.querySelector('tr').cloneNode(true);
-
-        row.querySelectorAll('input').forEach(i => {
-            if (i.classList.contains('qty')) {
-                i.value = '1';
-            } else if (i.classList.contains('price') || i.classList.contains('amount')) {
-                i.value = '0';
-            } else {
-                i.value = '';
-            }
-        });
-
-        tbody.appendChild(row);
-        bindManualRow(row);
-        calcGrandTotal();
-    });
+            });
+        }
+    })();
 </script>

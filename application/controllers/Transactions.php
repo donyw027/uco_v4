@@ -77,6 +77,28 @@ class Transactions extends MY_Controller
         $this->render('admin/transactions/manual_inquiries', $data);
     }
 
+    public function print_manual_invoice($id)
+    {
+        [$inv, $items] = $this->manual_inv->find_with_items($id);
+
+        if (!$inv) {
+            show_404();
+        }
+
+        $data['company'] = $this->company->latest();
+
+        $currency = $this->db->get_where('currencies', [
+            'id' => (int)($inv['currency_id'] ?? 0)
+        ])->row_array();
+
+        $inv['currency_code'] = $currency['currency_code'] ?? '';
+
+        $data['inv'] = $inv;
+        $data['items'] = $items;
+
+        $this->load->view('admin/transactions/print_manual_invoice', $data);
+    }
+
     public function print_manual_inquiry($id)
     {
         $data['company'] = $this->company->latest();
@@ -130,29 +152,40 @@ class Transactions extends MY_Controller
                 $invoice_no = $this->so->next_doc_no('INV', 'INV-UCO');
             }
 
+            $paid_amount = (float)$this->input->post('paid_amount');
+
             $header = [
-                'invoice_no'       => $invoice_no,
-                'invoice_date'     => $this->input->post('invoice_date') ?: date('Y-m-d'),
-                'customer_name'    => $this->input->post('customer_name', true),
-                'customer_address' => $this->input->post('customer_address', true),
-                'customer_country' => $this->input->post('customer_country', true),
-                'pic_name'         => $this->input->post('pic_name', true),
-                'currency_id'         => (int)$this->input->post('currency_id'),
-                'incoterm_text'       => $this->input->post('incoterm_text', true),
-                'payment_term_text'   => $this->input->post('payment_term_text', true),
-                'subject'          => $this->input->post('subject', true),
-                'notes'            => $this->input->post('notes', true),
-                'created_by'       => $this->user['id'] ?? null,
-                'total_amount'     => 0,
+                'invoice_no'            => $invoice_no,
+                'invoice_date'          => $this->input->post('invoice_date') ?: date('Y-m-d'),
+                'customer_name'         => $this->input->post('customer_name', true),
+                'customer_address'      => $this->input->post('customer_address', true),
+                'customer_country'      => $this->input->post('customer_country', true),
+                'pic_name'              => $this->input->post('pic_name', true),
+                'currency_id'           => (int)$this->input->post('currency_id'),
+                'incoterm_text'         => $this->input->post('incoterm_text', true),
+                'payment_term_text'     => $this->input->post('payment_term_text', true),
+                'subject'               => $this->input->post('subject', true),
+                'notes'                 => $this->input->post('notes', true),
+                'created_by'            => $this->user['id'] ?? null,
+
+                // summary fields
+                'subtotal_amount'       => 0,
+                'total_discount_amount' => 0,
+                'total_tax_amount'      => 0,
+                'paid_amount'           => $paid_amount,
+                'balance_amount'        => 0,
+                'total_amount'          => 0,
             ];
 
             $items = [];
             foreach ((array)$this->input->post('description') as $i => $desc) {
                 $items[] = [
-                    'description' => $desc,
-                    'qty'         => (float)($this->input->post('qty')[$i] ?? 0),
-                    'unit'        => $this->input->post('unit')[$i] ?? '',
-                    'unit_price'  => (float)($this->input->post('unit_price')[$i] ?? 0),
+                    'description'       => $desc,
+                    'qty'               => (float)($this->input->post('qty')[$i] ?? 0),
+                    'unit'              => $this->input->post('unit')[$i] ?? '',
+                    'unit_price'        => (float)($this->input->post('unit_price')[$i] ?? 0),
+                    'discount_percent'  => (float)($this->input->post('discount_percent')[$i] ?? 0),
+                    'tax_percent'       => (float)($this->input->post('tax_percent')[$i] ?? 0),
                 ];
             }
 
@@ -185,21 +218,7 @@ class Transactions extends MY_Controller
         $this->render('admin/transactions/manual_invoices', $data);
     }
 
-    public function print_manual_invoice($id)
-    {
-        $data['company'] = $this->company->latest();
-        $data['inv'] = $this->db->query("
-        SELECT mi.*,
-       cur.currency_code
-FROM manual_invoices mi
-LEFT JOIN currencies cur ON cur.id = mi.currency_id
-WHERE mi.id = ?
-    ", [$id])->row_array();
 
-        $data['items'] = $this->manual_inv->items($id);
-
-        $this->load->view('admin/transactions/print_manual_invoice', $data);
-    }
 
     public function print_manual_invoice_draft()
     {
@@ -215,39 +234,71 @@ WHERE mi.id = ?
             'id' => (int)($draft['header']['currency_id'] ?? 0)
         ])->row_array();
 
-        $total = 0;
+        $subtotal_amount = 0;
+        $total_discount_amount = 0;
+        $total_tax_amount = 0;
+        $grand_total = 0;
+
+        $paid_amount = (float)($draft['header']['paid_amount'] ?? 0);
+
         $items = [];
 
         foreach ((array)$draft['items'] as $it) {
-            if (trim((string)($it['description'] ?? '')) === '' || (float)($it['qty'] ?? 0) <= 0) {
+            $description = trim((string)($it['description'] ?? ''));
+            $qty = (float)($it['qty'] ?? 0);
+            $unit_price = (float)($it['unit_price'] ?? 0);
+            $discount_percent = (float)($it['discount_percent'] ?? 0);
+            $tax_percent = (float)($it['tax_percent'] ?? 0);
+
+            if ($description === '' || $qty <= 0) {
                 continue;
             }
 
-            $amount = (float)($it['qty'] ?? 0) * (float)($it['unit_price'] ?? 0);
-            $total += $amount;
+            $subtotal = $qty * $unit_price;
+            $discount_amount = $subtotal * ($discount_percent / 100);
+            $dpp = $subtotal - $discount_amount;
+            $tax_amount = $dpp * ($tax_percent / 100);
+            $amount = $dpp + $tax_amount;
+
+            $subtotal_amount += $subtotal;
+            $total_discount_amount += $discount_amount;
+            $total_tax_amount += $tax_amount;
+            $grand_total += $amount;
 
             $items[] = [
-                'description' => $it['description'] ?? '',
-                'qty' => $it['qty'] ?? 0,
-                'unit' => $it['unit'] ?? '',
-                'unit_price' => $it['unit_price'] ?? 0,
-                'amount' => $amount,
+                'description'       => $description,
+                'qty'               => $qty,
+                'unit'              => $it['unit'] ?? '',
+                'unit_price'        => $unit_price,
+                'discount_percent'  => $discount_percent,
+                'tax_percent'       => $tax_percent,
+                'subtotal'          => $subtotal,
+                'discount_amount'   => $discount_amount,
+                'tax_amount'        => $tax_amount,
+                'amount'            => $amount,
             ];
         }
 
+        $balance_amount = $grand_total - $paid_amount;
+
         $data['inv'] = [
-            'invoice_no'        => $draft['header']['invoice_no'] ?: 'DRAFT-PREVIEW',
-            'invoice_date'      => $draft['header']['invoice_date'] ?? date('Y-m-d'),
-            'customer_name'     => $draft['header']['customer_name'] ?? '',
-            'customer_address'  => $draft['header']['customer_address'] ?? '',
-            'customer_country'  => $draft['header']['customer_country'] ?? '',
-            'pic_name'          => $draft['header']['pic_name'] ?? '',
-            'subject'           => $draft['header']['subject'] ?? '',
-            'notes'             => $draft['header']['notes'] ?? '',
-            'currency_code'     => $currency['currency_code'] ?? '',
-            'payment_term_text' => $draft['header']['payment_term_text'] ?? '',
-            'incoterm_text'     => $draft['header']['incoterm_text'] ?? '',
-            'total_amount'      => $total,
+            'invoice_no'            => $draft['header']['invoice_no'] ?: 'DRAFT-PREVIEW',
+            'invoice_date'          => $draft['header']['invoice_date'] ?? date('Y-m-d'),
+            'customer_name'         => $draft['header']['customer_name'] ?? '',
+            'customer_address'      => $draft['header']['customer_address'] ?? '',
+            'customer_country'      => $draft['header']['customer_country'] ?? '',
+            'pic_name'              => $draft['header']['pic_name'] ?? '',
+            'subject'               => $draft['header']['subject'] ?? '',
+            'notes'                 => $draft['header']['notes'] ?? '',
+            'payment_term_text'     => $draft['header']['payment_term_text'] ?? '',
+            'incoterm_text'         => $draft['header']['incoterm_text'] ?? '',
+            'currency_code'         => $currency['currency_code'] ?? '',
+            'subtotal_amount'       => $subtotal_amount,
+            'total_discount_amount' => $total_discount_amount,
+            'total_tax_amount'      => $total_tax_amount,
+            'paid_amount'           => $paid_amount,
+            'balance_amount'        => $balance_amount,
+            'total_amount'          => $grand_total,
         ];
 
         $data['items'] = $items;
