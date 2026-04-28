@@ -35,3 +35,11 @@ $route['transactions/print-manual-inquiry-draft'] = 'transactions/print_manual_i
 
 $route['transactions/delete-manual-invoice/(:num)'] = 'transactions/delete_manual_invoice/$1';
 $route['transactions/delete-manual-inquiry/(:num)'] = 'transactions/delete_manual_inquiry/$1';
+
+
+$route['fee-slips'] = 'fee_slips/index';
+$route['fee-slips/print/(:num)'] = 'fee_slips/print_slip/$1';
+$route['fee-slips/print-draft'] = 'fee_slips/print_draft';
+$route['fee_slips/print_only'] = 'fee_slips/print_only';
+$route['fee-slips/print-only'] = 'fee_slips/print_only';
+$route['fee-slips/delete/(:num)'] = 'fee_slips/delete/$1';

@@ -1,59 +1,106 @@
+<?php
+$edit = isset($edit) && is_array($edit) ? $edit : null;
+$items = !empty($edit_items) ? $edit_items : [[
+    'description' => 'Used Cooking Oil Supply / Export Documentation Assistance',
+    'agency' => 'Supplier / Customs / Related Authority',
+    'duration_text' => 'To be confirmed',
+    'amount' => 0
+]];
+function qf($k, $d = '') { global $edit; return e($edit[$k] ?? $d); }
+function selected_qf($k, $v, $d = '') { global $edit; $cur = $edit[$k] ?? $d; return ((string)$cur === (string)$v) ? 'selected' : ''; }
+$docTypeLabels = [
+    'commercial_proposal' => 'Commercial Proposal',
+    'business_proposal'   => 'Business Proposal',
+    'quotation'           => 'Quotation',
+    'service_offer'       => 'Service Offer',
+];
+$offerTypeLabels = [
+    'product'         => 'Product / Goods',
+    'service'         => 'Service / Consulting',
+    'product_service' => 'Product + Service',
+];
+?>
 <div class="section-block">
     <div class="section-head">
         <div>
-            <h3>Inquiry Management</h3>
-            <p>Create consulting service proposals manually, then save and print or print directly without saving.</p>
+            <h3>Commercial Document</h3>
+            <p>Create flexible offers for product export, consulting service, or both.</p>
         </div>
-        <div class="badge-soft badge-soft-primary">Manual Consulting Inquiry</div>
+        <div class="badge-soft badge-soft-primary">Proposal / Quotation / Service Offer</div>
     </div>
 
     <div class="card shadow-sm mb-4">
         <div class="card-body">
-            <h5 class="mb-1">Create Inquiry / Proposal</h5>
-            <div class="text-muted small mb-3">
-                This form is intended for consulting service proposals and manual inquiries.
-            </div>
+            <h5 class="mb-1"><?= $edit ? 'Edit Commercial Document' : 'Create Commercial Document'; ?></h5>
+            <p class="text-muted small mb-3">Pilih jenis dokumen dan jenis penawaran, nanti judul serta label print akan menyesuaikan.</p>
 
             <form method="post">
+                <?php if ($edit): ?><input type="hidden" name="id" value="<?= e($edit['id']); ?>"><?php endif; ?>
+
                 <div class="row g-3">
                     <div class="col-md-3">
-                        <label class="form-label">Proposal No</label>
-                        <input type="text" name="proposal_no" class="form-control" placeholder="Auto generate if empty">
+                        <label class="form-label">Document Type</label>
+                        <select name="document_type" id="document_type" class="form-select">
+                            <?php foreach ($docTypeLabels as $key => $label): ?>
+                                <option value="<?= e($key); ?>" <?= selected_qf('document_type', $key, 'commercial_proposal'); ?>><?= e($label); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Offer Type</label>
+                        <select name="offer_type" id="offer_type" class="form-select">
+                            <?php foreach ($offerTypeLabels as $key => $label): ?>
+                                <option value="<?= e($key); ?>" <?= selected_qf('offer_type', $key, 'product_service'); ?>><?= e($label); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Document No</label>
+                        <input type="text" name="proposal_no" class="form-control" value="<?= qf('proposal_no'); ?>" placeholder="Auto if empty">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Date</label>
+                        <input type="date" name="proposal_date" class="form-control" value="<?= qf('proposal_date', date('Y-m-d')); ?>" required>
                     </div>
 
                     <div class="col-md-3">
-                        <label class="form-label">Proposal Date</label>
-                        <input type="date" name="proposal_date" class="form-control" value="<?= date('Y-m-d'); ?>" required>
+                        <label class="form-label">Currency</label>
+                        <input type="text" name="currency_text" class="form-control" value="<?= qf('currency_text', 'IDR'); ?>" placeholder="IDR / USD">
                     </div>
-
                     <div class="col-md-3">
-                        <label class="form-label">Currency Text</label>
-                        <input type="text" name="currency_text" class="form-control" value="IDR" placeholder="IDR / USD / GBP">
+                        <label class="form-label">Validity Offer</label>
+                        <input type="text" name="validity_offer" class="form-control" value="<?= qf('validity_offer', '7 days from issued date'); ?>" placeholder="e.g. 7 days">
                     </div>
-
+                    <div class="col-md-3">
+                        <label class="form-label">Lead Time / Timeline</label>
+                        <input type="text" name="lead_time" class="form-control" value="<?= qf('lead_time', 'To be confirmed'); ?>" placeholder="e.g. 14 working days">
+                    </div>
                     <div class="col-md-3">
                         <label class="form-label">Attention / PIC</label>
-                        <input type="text" name="recipient_pic" class="form-control" placeholder="PIC / Director / Manager">
+                        <input type="text" name="recipient_pic" class="form-control" value="<?= qf('recipient_pic'); ?>">
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label">Recipient Company</label>
-                        <input type="text" name="recipient_company" class="form-control" required>
+                        <label class="form-label">Client / Recipient Company</label>
+                        <input type="text" name="recipient_company" class="form-control" value="<?= qf('recipient_company'); ?>" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Subject / Offer Title</label>
+                        <input type="text" name="subject" id="subject" class="form-control" value="<?= qf('subject', 'Commercial Offer for Product Supply & Consulting Service'); ?>">
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label">Subject / Service Title</label>
-                        <input type="text" name="subject" class="form-control" value="Pengurusan Izin Penambahan Barang Jadi Kategori DHE SDA">
-                    </div>
-
-                    <div class="col-12">
                         <label class="form-label">Recipient Address</label>
-                        <textarea name="recipient_address" class="form-control" rows="3" placeholder="Pasuruan – Indonesia"></textarea>
+                        <textarea name="recipient_address" class="form-control" rows="3"><?= qf('recipient_address'); ?></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Scope of Work / Offer Scope</label>
+                        <textarea name="scope_of_work" id="scope_of_work" class="form-control" rows="3" placeholder="Ringkasan scope barang/jasa yang ditawarkan"><?= qf('scope_of_work', 'Product supply, sourcing support, export/import consultation, documentation assistance, and coordination based on client requirements.'); ?></textarea>
                     </div>
 
                     <div class="col-12">
                         <label class="form-label">Opening Text</label>
-                        <textarea name="opening_text" class="form-control" rows="4">Bersama ini kami menyampaikan penawaran jasa pengurusan perizinan penambahan barang jadi kategori DHE SDA yang akan berhubungan dengan KPPBC Pusat serta Kementerian Perdagangan Republik Indonesia.</textarea>
+                        <textarea name="opening_text" id="opening_text" class="form-control" rows="3"><?= qf('opening_text', 'Thank you for your interest in our products and services. We are pleased to submit this offer for your review and consideration.'); ?></textarea>
                     </div>
                 </div>
 
@@ -62,30 +109,22 @@
                         <thead>
                             <tr>
                                 <th>Description</th>
-                                <th width="220">Agency / Instansi</th>
-                                <th width="150">Duration</th>
+                                <th width="220" id="agency-head">Agency / Scope</th>
+                                <th width="150" id="duration-head">Duration / Lead Time</th>
                                 <th width="170">Amount</th>
                                 <th width="70">#</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>
-                                    <textarea name="description[]" class="form-control" rows="2" placeholder="Service description">Registrasi & Izin Penambahan Barang Jadi (Calcium Soap & Shortening)</textarea>
-                                </td>
-                                <td>
-                                    <input type="text" name="agency[]" class="form-control" value="KPPBC Pusat & Kemendag">
-                                </td>
-                                <td>
-                                    <input type="text" name="duration_text[]" class="form-control" value="±5 Hari Kerja">
-                                </td>
-                                <td>
-                                    <input type="number" step="0.01" name="amount[]" class="form-control inquiry-amount" value="32000000">
-                                </td>
-                                <td>
-                                    <button type="button" class="btn btn-sm btn-outline-danger remove-row">×</button>
-                                </td>
-                            </tr>
+                            <?php foreach ($items as $it): ?>
+                                <tr>
+                                    <td><textarea name="description[]" class="form-control" rows="2"><?= e($it['description'] ?? ''); ?></textarea></td>
+                                    <td><input type="text" name="agency[]" class="form-control" value="<?= e($it['agency'] ?? ''); ?>"></td>
+                                    <td><input type="text" name="duration_text[]" class="form-control" value="<?= e($it['duration_text'] ?? ''); ?>"></td>
+                                    <td><input type="number" step="0.01" name="amount[]" class="form-control inquiry-amount" value="<?= e($it['amount'] ?? 0); ?>"></td>
+                                    <td><button type="button" class="btn btn-sm btn-outline-danger remove-row">×</button></td>
+                                </tr>
+                            <?php endforeach; ?>
                         </tbody>
                         <tfoot>
                             <tr>
@@ -99,28 +138,25 @@
 
                 <div class="row g-3 mt-1">
                     <div class="col-md-6">
-                        <label class="form-label">Terms / Ketentuan</label>
-                        <textarea name="terms_text" class="form-control" rows="5">• Pembayaran: 30% saat SPK, 70% setelah izin terbit
-• Dokumen disiapkan oleh pihak perusahaan
-• Biaya belum termasuk perubahan regulasi tambahan</textarea>
+                        <label class="form-label">Terms / Commercial Terms</label>
+                        <textarea name="terms_text" id="terms_text" class="form-control" rows="5"><?= qf('terms_text', "• Price is subject to final scope, quantity, and destination confirmation.\n• Payment term will be agreed before project execution or shipment.\n• Banking charges, tax, customs duties, and third-party fees are excluded unless stated otherwise."); ?></textarea>
                     </div>
-
                     <div class="col-md-6">
                         <label class="form-label">Closing Text</label>
-                        <textarea name="closing_text" class="form-control" rows="5">Demikian proposal ini kami sampaikan. Kami berharap dapat menjalin kerja sama yang baik dengan perusahaan Bapak/Ibu.</textarea>
+                        <textarea name="closing_text" class="form-control" rows="5"><?= qf('closing_text', 'We hope this offer meets your requirements. Please feel free to contact us for further discussion or adjustment.'); ?></textarea>
                     </div>
                 </div>
 
                 <div class="d-flex flex-wrap gap-2 align-items-center mt-3">
                     <button type="button" class="btn btn-outline-secondary btn-sm" id="add-inquiry-row">+ Add Item</button>
-
-                    <button type="submit" name="submit_action" value="save_print" class="btn btn-dark">
-                        Save + Print
-                    </button>
-
-                    <button type="submit" name="submit_action" value="print_only" class="btn btn-success" formtarget="_blank">
-                        Print Only
-                    </button>
+                    <?php if ($edit): ?>
+                        <button type="submit" name="submit_action" value="update" class="btn btn-dark">Update</button>
+                        <button type="submit" name="submit_action" value="update_print" class="btn btn-success">Update + Print</button>
+                        <a href="<?= site_url('transactions/inquiries'); ?>" class="btn btn-outline-secondary">Cancel</a>
+                    <?php else: ?>
+                        <button type="submit" name="submit_action" value="save_print" class="btn btn-dark">Save + Print</button>
+                        <button type="submit" name="submit_action" value="print_only" class="btn btn-success" formtarget="_blank">Print Only</button>
+                    <?php endif; ?>
                 </div>
             </form>
         </div>
@@ -130,46 +166,43 @@
 <div class="section-block">
     <div class="section-head">
         <div>
-            <h3>Saved Inquiry List</h3>
-            <p>Saved manual proposals will appear here.</p>
+            <h3>Saved Commercial Documents</h3>
+            <p>Saved proposals, quotations, and service offers.</p>
         </div>
     </div>
-
     <div class="card shadow-sm">
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-sm mb-0 align-middle">
                     <thead>
                         <tr>
-                            <th>Proposal No</th>
+                            <th>Doc No</th>
                             <th>Date</th>
+                            <th>Type</th>
                             <th>Recipient</th>
                             <th>Subject</th>
-                            <th width="140">Action</th>
+                            <th width="240">Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php if (empty($rows)): ?>
+                            <tr><td colspan="6" class="empty-state">No documents yet.</td></tr>
+                        <?php else: foreach ($rows as $row): ?>
                             <tr>
-                                <td colspan="5" class="empty-state">No inquiries yet.</td>
-                            </tr>
-                        <?php else: ?>
-                            <?php foreach ($rows as $row): ?>
-                                <tr>
-                                    <td class="fw-semibold"><?= e($row['proposal_no']); ?></td>
-                                    <td><?= format_date_id($row['proposal_date']); ?></td>
-                                    <td><?= e($row['recipient_company']); ?></td>
-                                    <td><?= e($row['subject']); ?></td>
-                                    <td>
+                                <td class="fw-semibold"><?= e($row['proposal_no']); ?></td>
+                                <td><?= format_date_id($row['proposal_date']); ?></td>
+                                <td><span class="badge-soft badge-soft-primary"><?= e($docTypeLabels[$row['document_type'] ?? 'commercial_proposal'] ?? 'Commercial Proposal'); ?></span></td>
+                                <td><?= e($row['recipient_company']); ?></td>
+                                <td><?= e($row['subject']); ?></td>
+                                <td>
+                                    <div class="d-inline-flex flex-nowrap gap-1 action-buttons">
+                                        <a href="<?= site_url('transactions/inquiries?edit=' . $row['id']); ?>" class="btn btn-sm btn-outline-primary">Edit</a>
                                         <a href="<?= site_url('transactions/print-manual-inquiry/' . $row['id']); ?>" target="_blank" class="btn btn-sm btn-success">Print</a>
-
-                                        <a href="<?= site_url('transactions/delete-manual-inquiry/' . $row['id']); ?>"
-                                            onclick="return confirm('Delete this inquiry?')"
-                                            class="btn btn-sm btn-danger">Delete</a>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
+                                        <a href="<?= site_url('transactions/delete-manual-inquiry/' . $row['id']); ?>" onclick="return confirm('Delete this document?')" class="btn btn-sm btn-danger">Delete</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        <?php endforeach; endif; ?>
                     </tbody>
                 </table>
             </div>
@@ -178,56 +211,25 @@
 </div>
 
 <script>
-    function formatNumberInquiry(num) {
-        num = parseFloat(num || 0);
-        return num.toLocaleString('en-US', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        });
+function fmt(n){return parseFloat(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}
+function total(){let t=0;document.querySelectorAll('.inquiry-amount').forEach(e=>t+=parseFloat(e.value||0));document.getElementById('inquiry-grand-total').value=fmt(t)}
+function bind(r){r.querySelector('.inquiry-amount').addEventListener('input',total);r.querySelector('.remove-row').addEventListener('click',()=>{if(document.querySelectorAll('#manual-inquiry-items-table tbody tr').length>1){r.remove();total()}})}
+document.querySelectorAll('#manual-inquiry-items-table tbody tr').forEach(bind);total();
+document.getElementById('add-inquiry-row').addEventListener('click',()=>{let tb=document.querySelector('#manual-inquiry-items-table tbody'),r=tb.querySelector('tr').cloneNode(true);r.querySelectorAll('input,textarea').forEach(i=>i.value=(i.name==='amount[]')?'0':'');tb.appendChild(r);bind(r);total()});
+function applyOfferType(){
+    const offer = document.getElementById('offer_type').value;
+    const agencyHead = document.getElementById('agency-head');
+    const durationHead = document.getElementById('duration-head');
+    if(offer === 'product'){
+        agencyHead.innerText = 'Origin / Specification';
+        durationHead.innerText = 'Lead Time';
+    } else if(offer === 'service'){
+        agencyHead.innerText = 'Scope / Agency';
+        durationHead.innerText = 'Timeline';
+    } else {
+        agencyHead.innerText = 'Scope / Specification';
+        durationHead.innerText = 'Duration / Lead Time';
     }
-
-    function calcInquiryGrandTotal() {
-        let total = 0;
-        document.querySelectorAll('.inquiry-amount').forEach(el => {
-            total += parseFloat(el.value || 0);
-        });
-        document.getElementById('inquiry-grand-total').value = formatNumberInquiry(total);
-    }
-
-    function bindInquiryRow(row) {
-        const amount = row.querySelector('.inquiry-amount');
-
-        amount.addEventListener('input', calcInquiryGrandTotal);
-
-        row.querySelector('.remove-row').addEventListener('click', () => {
-            if (document.querySelectorAll('#manual-inquiry-items-table tbody tr').length > 1) {
-                row.remove();
-                calcInquiryGrandTotal();
-            }
-        });
-    }
-
-    document.querySelectorAll('#manual-inquiry-items-table tbody tr').forEach(bindInquiryRow);
-    calcInquiryGrandTotal();
-
-    document.getElementById('add-inquiry-row').addEventListener('click', () => {
-        const tbody = document.querySelector('#manual-inquiry-items-table tbody');
-        const row = tbody.querySelector('tr').cloneNode(true);
-
-        row.querySelectorAll('input, textarea').forEach(i => {
-            if (i.name === 'agency[]') {
-                i.value = '';
-            } else if (i.name === 'duration_text[]') {
-                i.value = '';
-            } else if (i.name === 'amount[]') {
-                i.value = '0';
-            } else {
-                i.value = '';
-            }
-        });
-
-        tbody.appendChild(row);
-        bindInquiryRow(row);
-        calcInquiryGrandTotal();
-    });
+}
+document.getElementById('offer_type').addEventListener('change', applyOfferType);applyOfferType();
 </script>

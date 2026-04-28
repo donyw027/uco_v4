@@ -3,8 +3,35 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Consulting Service Proposal</title>
+    <title>Commercial Document</title>
     <style>
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .brand {
+            flex: 1;
+        }
+
+        .header-logo-center {
+            flex: 0 0 180px;
+            text-align: center;
+        }
+
+        .header-logo-center img {
+            max-width: 140px;
+            max-height: 90px;
+            object-fit: contain;
+        }
+
+        .doc-meta {
+            flex: 1;
+            text-align: right;
+        }
+
         .top-actions {
             display: flex;
             justify-content: flex-end;
@@ -331,31 +358,64 @@
 </head>
 
 <body onload="window.print()">
+    <?php
+    $docType = $inq['document_type'] ?? 'commercial_proposal';
+    $offerType = $inq['offer_type'] ?? 'product_service';
+    $docTitles = [
+        'commercial_proposal' => 'COMMERCIAL PROPOSAL',
+        'business_proposal'   => 'BUSINESS PROPOSAL',
+        'quotation'           => 'QUOTATION',
+        'service_offer'       => 'SERVICE OFFER',
+    ];
+    $docSubtitles = [
+        'product'         => 'Product / goods offer',
+        'service'         => 'Service / consulting offer',
+        'product_service' => 'Product and service offer',
+    ];
+    $docTitle = $docTitles[$docType] ?? 'COMMERCIAL PROPOSAL';
+    $docSubtitle = $docSubtitles[$offerType] ?? 'Product and service offer';
+    $agencyLabel = ($offerType === 'product') ? 'Specification' : (($offerType === 'service') ? 'Scope / Agency' : 'Scope / Specification');
+    $durationLabel = ($offerType === 'service') ? 'Timeline' : 'Lead Time';
+    ?>
+
     <div class="page">
         <div class="top-accent"></div>
 
         <div class="content">
             <div class="top-actions">
-                <a href="<?= site_url('transactions/inquiries'); ?>" class="btn-back">← Back to Manual Inquiry</a>
+                <a href="<?= site_url('transactions/inquiries'); ?>" class="btn-back">← Back to Commercial Document</a>
             </div>
             <div class="header">
+
+                <!-- LEFT -->
                 <div class="brand">
-                    <!-- <img src="<?= base_url('assets/img/uco.png'); ?>" class="brand-logo" alt="UCO Logo"> -->
                     <div>
-                        <div class="brand-kicker">Consulting service document</div>
-                        <h1 class="brand-title">CONSULTING SERVICE PROPOSAL</h1>
-                        <div class="company-name"><?= e($company['company_name'] ?? 'UCO Exportindo Consulting'); ?></div>
-                        <div class="company-address"><?= nl2br(e($company['address'] ?? '')); ?></div>
+                        <div class="brand-kicker"><?= e($docSubtitle); ?></div>
+                        <h1 class="brand-title"><?= e($docTitle); ?></h1>
+                        <div class="company-name">
+                            <?= e($company['company_name'] ?? 'UCO Exportindo Consulting'); ?>
+                        </div>
+                        <div class="company-address">
+                            <?= nl2br(e($company['address'] ?? '')); ?>
+                        </div>
                     </div>
                 </div>
 
+                <!-- CENTER LOGO -->
+                <div class="header-logo-center">
+                    <img src="<?= base_url('assets/img/uco.png'); ?>" alt="UCO Logo">
+                </div>
+
+                <!-- RIGHT -->
                 <div class="doc-meta">
-                    <div class="doc-label">Proposal No</div>
+                    <div class="doc-label">Document No</div>
                     <div class="doc-no"><?= e($inq['proposal_no'] ?? ''); ?></div>
                     <div class="doc-sub">
-                        <strong>Date:</strong> <?= format_date_id($inq['proposal_date'] ?? ''); ?>
+                        <strong>Date:</strong>
+                        <?= format_date_id($inq['proposal_date'] ?? ''); ?>
                     </div>
                 </div>
+
             </div>
 
             <div class="section-box">
@@ -378,6 +438,21 @@
                 </div>
             <?php endif; ?>
 
+            <?php if (!empty($inq['validity_offer']) || !empty($inq['lead_time'])): ?>
+                <div class="section-box">
+                    <div class="box-title">Commercial Information</div>
+                    <?php if (!empty($inq['validity_offer'])): ?><div><strong>Validity Offer:</strong> <?= e($inq['validity_offer']); ?></div><?php endif; ?>
+                    <?php if (!empty($inq['lead_time'])): ?><div><strong><?= e($durationLabel); ?>:</strong> <?= e($inq['lead_time']); ?></div><?php endif; ?>
+                </div>
+            <?php endif; ?>
+
+            <?php if (!empty($inq['scope_of_work'])): ?>
+                <div class="section-box">
+                    <div class="box-title">Scope of Work / Offer Scope</div>
+                    <div class="opening-text"><?= nl2br(e($inq['scope_of_work'])); ?></div>
+                </div>
+            <?php endif; ?>
+
             <?php if (!empty($inq['opening_text'])): ?>
                 <div class="section-box">
                     <div class="box-title">Opening</div>
@@ -391,9 +466,9 @@
                         <tr>
                             <th width="42">No</th>
                             <th>Description</th>
-                            <th width="160">Instansi</th>
-                            <th width="95">Durasi</th>
-                            <th class="text-end" width="120">Biaya</th>
+                            <th width="160"><?= e($agencyLabel); ?></th>
+                            <th width="95"><?= e($durationLabel); ?></th>
+                            <th class="text-end" width="120">Amount</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -421,21 +496,21 @@
 
             <?php if (!empty($inq['terms_text'])): ?>
                 <div class="section-box" style="margin-top:10px;">
-                    <div class="box-title">Ketentuan</div>
-                    <div class="terms-text"><?= nl2br(e($inq['terms_text'])); ?></div>
+                    <div class="box-title">Commercial Terms</div>
+                    <?= nl2br(e(trim(preg_replace("/\n\s*\n+/", "\n", $inq['terms_text'])))); ?>
                 </div>
             <?php endif; ?>
 
             <?php if (!empty($inq['closing_text'])): ?>
                 <div class="section-box">
                     <div class="box-title">Closing</div>
-                    <div class="closing-text"><?= nl2br(e($inq['closing_text'])); ?></div>
+                    <?= nl2br(e(trim(preg_replace("/\n\s*\n+/", "\n", $inq['closing_text'])))); ?>
                 </div>
             <?php endif; ?>
 
             <div class="sign-grid">
                 <div class="sign-box">
-                    <div class="box-title">Hormat Kami</div>
+                    <div class="box-title">Offered By</div>
                     <div class="sign-wrap">
                         <div class="sign-space"></div>
                         <div class="sign-line"></div>
@@ -448,7 +523,7 @@
                 </div>
 
                 <div class="sign-box">
-                    <div class="box-title">Menyetujui</div>
+                    <div class="box-title">Accepted By</div>
                     <div class="sign-wrap">
                         <div class="sign-space"></div>
                         <div class="sign-line"></div>

@@ -327,47 +327,47 @@ $section_desc = $title_map[$slug] ?? 'Kelola master data sistem dengan tampilan 
                     <th>UOM</th>
                     <th class="text-end">Price</th>
                     <th>Status</th>
-                    <th width="160">Action</th>
+                    <th class="action-cell">Action</th>
                   <?php elseif ($slug === 'customers'): ?>
                     <th>Code</th>
                     <th>Company</th>
                     <th>Country</th>
                     <th>Email</th>
                     <th>Status</th>
-                    <th width="160">Action</th>
+                    <th class="action-cell">Action</th>
                   <?php elseif ($slug === 'suppliers'): ?>
                     <th>Company</th>
                     <th>Country</th>
                     <th>Email</th>
                     <th>Phone</th>
-                    <th width="160">Action</th>
+                    <th class="action-cell">Action</th>
                   <?php elseif ($slug === 'uom'): ?>
                     <th>UOM</th>
-                    <th width="160">Action</th>
+                    <th class="action-cell">Action</th>
                   <?php elseif ($slug === 'currencies'): ?>
                     <th>Code</th>
                     <th>Name</th>
-                    <th width="160">Action</th>
+                    <th class="action-cell">Action</th>
                   <?php elseif ($slug === 'incoterms'): ?>
                     <th>Code</th>
                     <th>Description</th>
-                    <th width="160">Action</th>
+                    <th class="action-cell">Action</th>
                   <?php elseif ($slug === 'payment_terms'): ?>
                     <th>Term</th>
                     <th>Description</th>
-                    <th width="160">Action</th>
+                    <th class="action-cell">Action</th>
                   <?php elseif ($slug === 'warehouses'): ?>
                     <th>Code</th>
                     <th>Warehouse</th>
                     <th>Location</th>
                     <th>Status</th>
-                    <th width="160">Action</th>
+                    <th class="action-cell">Action</th>
                   <?php elseif ($slug === 'users'): ?>
                     <th>Nama</th>
                     <th>Username</th>
                     <th>Role</th>
                     <th>Status</th>
-                    <th width="160">Action</th>
+                    <th class="action-cell">Action</th>
                   <?php endif; ?>
                 </tr>
               </thead>
@@ -432,7 +432,7 @@ $section_desc = $title_map[$slug] ?? 'Kelola master data sistem dengan tampilan 
                         <td><span class="badge-soft badge-soft-<?= (($row['is_active'] ?? 1) ? 'success' : 'secondary'); ?>"><?= (($row['is_active'] ?? 1) ? 'Active' : 'Inactive'); ?></span></td>
                       <?php endif; ?>
 
-                      <td>
+                      <td class="action-cell">
                         <div class="table-action-group">
                           <a href="<?= site_url('masters/' . $slug . '?edit=' . $row['id']); ?>" class="btn btn-sm btn-outline-primary">Edit</a>
                           <form method="post" class="d-inline" onsubmit="return confirm('Hapus data ini?')">

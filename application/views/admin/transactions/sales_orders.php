@@ -165,7 +165,7 @@
                             <th>Status</th>
                             <th>Currency</th>
                             <th class="text-end">Total</th>
-                            <th width="420">Action</th>
+                            <th class="action-cell">Action</th>
                         </tr>
                     </thead>
                     <tbody>

@@ -43,4 +43,24 @@ class Manual_inquiry_model extends CI_Model
         $this->db->trans_commit();
         return $id;
     }
+
+    public function update($id, $header, $items)
+    {
+        $id = (int)$id;
+        $this->db->trans_begin();
+        $this->db->where('id', $id)->update('manual_inquiries', $header);
+        $this->db->delete('manual_inquiry_items', ['manual_inquiry_id' => $id]);
+        foreach ((array)$items as $it) {
+            if (trim((string)$it['description']) === '') continue;
+            $it['manual_inquiry_id'] = $id;
+            $this->db->insert('manual_inquiry_items', $it);
+        }
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
+            return false;
+        }
+        $this->db->trans_commit();
+        return $id;
+    }
+
 }

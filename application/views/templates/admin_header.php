@@ -159,6 +159,140 @@ $master_menu_open = $nav_active([
       flex: 0 0 auto;
     }
 
+
+
+    /* =========================================================
+       Admin compact usability patch
+       - tombol tabel sejajar, tidak turun ke bawah
+       - form/card/table lebih ringkas dan enak dibaca
+       ========================================================= */
+    .section-block { margin-bottom: 1.35rem; }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: .85rem;
+    }
+
+    .section-head h3 {
+      margin-bottom: .15rem;
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -.02em;
+    }
+
+    .section-head p {
+      margin-bottom: 0;
+      font-size: .86rem;
+      color: #64748b;
+    }
+
+    .card { border: 1px solid rgba(15, 23, 42, .08); border-radius: 18px; }
+    .card.shadow-sm { box-shadow: 0 10px 30px rgba(15, 23, 42, .055) !important; }
+    .card-body { padding: 1.1rem; }
+
+    .form-label {
+      margin-bottom: .32rem;
+      font-size: .78rem;
+      font-weight: 700;
+      color: #475569;
+    }
+
+    .form-control, .form-select {
+      min-height: 38px;
+      border-radius: 11px;
+      border-color: #dbe3ef;
+      font-size: .88rem;
+    }
+
+    textarea.form-control { min-height: auto; }
+
+    .btn {
+      border-radius: 11px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .35rem;
+    }
+
+    .btn-sm {
+      min-height: 31px;
+      padding: .28rem .58rem;
+      border-radius: 10px;
+      font-size: .78rem;
+      line-height: 1.1;
+      white-space: nowrap;
+    }
+
+    .table-responsive { overflow-x: auto; }
+
+    .table {
+      --bs-table-bg: transparent;
+      font-size: .88rem;
+    }
+
+    .table > :not(caption) > * > * {
+      padding: .62rem .75rem;
+      vertical-align: middle;
+    }
+
+    .table thead th {
+      font-size: .74rem;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      color: #64748b;
+      background: #f8fafc;
+      border-bottom: 1px solid #e2e8f0;
+      white-space: nowrap;
+    }
+
+    .table tbody tr:hover { background: #f8fafc; }
+
+    .table-action-group,
+    .action-buttons {
+      display: inline-flex;
+      align-items: center;
+      flex-wrap: nowrap;
+      gap: .38rem;
+      white-space: nowrap;
+    }
+
+    .table-action-group form,
+    .action-buttons form {
+      display: inline-flex;
+      margin: 0;
+    }
+
+    .table td.action-cell,
+    .table th.action-cell {
+      width: 1%;
+      white-space: nowrap;
+    }
+
+    .admin-form-actions {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: .5rem;
+    }
+
+    .empty-state {
+      text-align: center;
+      color: #94a3b8;
+      padding: 1.4rem !important;
+      font-weight: 600;
+    }
+
+    @media (max-width: 767.98px) {
+      .section-head { align-items: flex-start; flex-direction: column; }
+      .card-body { padding: .95rem; }
+      .table { font-size: .82rem; }
+      .table > :not(caption) > * > * { padding: .55rem .6rem; }
+    }
+
     @media (max-width: 991.98px) {
       .admin-shell {
         display: block !important;
@@ -299,7 +433,10 @@ $master_menu_open = $nav_active([
           <span>Invoices</span>
         </a>
 
-
+        <a class="nav-link <?= $nav_active(['fee-slips']); ?>" href="<?= site_url('fee-slips'); ?>">
+          <i class="bi bi-cash-stack"></i>
+          <span>Salary / Fee Slips</span>
+        </a>
 
         <div class="nav-section-title">Inventory</div>
 

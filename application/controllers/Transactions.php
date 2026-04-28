@@ -32,7 +32,12 @@ class Transactions extends MY_Controller
                 'recipient_company' => $this->input->post('recipient_company', true),
                 'recipient_address' => $this->input->post('recipient_address', true),
                 'recipient_pic'     => $this->input->post('recipient_pic', true),
+                'document_type'     => $this->input->post('document_type', true) ?: 'commercial_proposal',
+                'offer_type'        => $this->input->post('offer_type', true) ?: 'product_service',
                 'subject'           => $this->input->post('subject', true),
+                'validity_offer'    => $this->input->post('validity_offer', true),
+                'lead_time'         => $this->input->post('lead_time', true),
+                'scope_of_work'     => $this->input->post('scope_of_work', true),
                 'opening_text'      => $this->input->post('opening_text', true),
                 'terms_text'        => $this->input->post('terms_text', true),
                 'closing_text'      => $this->input->post('closing_text', true),
@@ -48,6 +53,20 @@ class Transactions extends MY_Controller
                     'duration_text' => $this->input->post('duration_text')[$i] ?? '',
                     'amount'        => (float)($this->input->post('amount')[$i] ?? 0),
                 ];
+            }
+
+            if ($action === 'update') {
+                $id = (int)$this->input->post('id');
+                $this->manual_inquiry->update($id, $header, $items);
+                $this->session->set_flashdata('success', 'Inquiry berhasil diperbarui.');
+                redirect('transactions/inquiries');
+            }
+
+            if ($action === 'update_print') {
+                $id = (int)$this->input->post('id');
+                $this->manual_inquiry->update($id, $header, $items);
+                $this->session->set_flashdata('success', 'Inquiry berhasil diperbarui.');
+                redirect('transactions/print-manual-inquiry/' . $id);
             }
 
             if ($action === 'save_print') {
@@ -74,6 +93,12 @@ class Transactions extends MY_Controller
 
         $data['page_title'] = 'Inquiries';
         $data['rows'] = $this->manual_inquiry->rows();
+        $data['edit'] = null;
+        $data['edit_items'] = [];
+        if ($this->input->get('edit')) {
+            $data['edit'] = $this->manual_inquiry->get($this->input->get('edit'));
+            $data['edit_items'] = $this->manual_inquiry->items($this->input->get('edit'));
+        }
         $this->render('admin/transactions/manual_inquiries', $data);
     }
 
@@ -189,6 +214,20 @@ class Transactions extends MY_Controller
                 ];
             }
 
+            if ($action === 'update') {
+                $id = (int)$this->input->post('id');
+                $this->manual_inv->update($id, $header, $items);
+                $this->session->set_flashdata('success', 'Manual invoice berhasil diperbarui.');
+                redirect('transactions/manual-invoices');
+            }
+
+            if ($action === 'update_print') {
+                $id = (int)$this->input->post('id');
+                $this->manual_inv->update($id, $header, $items);
+                $this->session->set_flashdata('success', 'Manual invoice berhasil diperbarui.');
+                redirect('transactions/print-manual-invoice/' . $id);
+            }
+
             if ($action === 'save_print') {
                 $saved_id = $this->manual_inv->create($header, $items);
 
@@ -215,6 +254,11 @@ class Transactions extends MY_Controller
         $data['page_title'] = 'Manual Invoices';
         $data['rows'] = $this->manual_inv->rows();
         $data['next_invoice_no'] = 'AUTO';
+        $data['edit'] = null;
+        $data['edit_items'] = [];
+        if ($this->input->get('edit')) {
+            [$data['edit'], $data['edit_items']] = $this->manual_inv->find_with_items($this->input->get('edit'));
+        }
         $this->render('admin/transactions/manual_invoices', $data);
     }
 

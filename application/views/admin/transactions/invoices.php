@@ -47,7 +47,7 @@
                             <th>SO No</th>
                             <th>Customer</th>
                             <th class="text-end">Total</th>
-                            <th width="210">Action</th>
+                            <th class="action-cell">Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -60,7 +60,7 @@
                                 <td><?= e($row['so_no']); ?></td>
                                 <td><?= e($row['company_name']); ?></td>
                                 <td class="text-end fw-semibold"><?= format_money($row['total_amount']); ?></td>
-                                <td>
+                                <td class="action-cell">
                                     <div class="table-action-group">
                                         <a href="<?= site_url('transactions/invoices?edit=' . $row['id']); ?>" class="btn btn-sm btn-outline-primary">Edit</a>
                                         <a href="<?= site_url('transactions/print-invoice/' . $row['id']); ?>" target="_blank" class="btn btn-sm btn-success">Print</a>

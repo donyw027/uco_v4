@@ -54,7 +54,7 @@
                             <th class="text-end">GW</th>
                             <th class="text-end">NW</th>
                             <th class="text-end">CBM</th>
-                            <th width="210">Action</th>
+                            <th class="action-cell">Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -70,7 +70,7 @@
                                 <td class="text-end"><?= number_format((float)$row['gross_weight'], 2); ?></td>
                                 <td class="text-end"><?= number_format((float)$row['net_weight'], 2); ?></td>
                                 <td class="text-end"><?= number_format((float)$row['cbm'], 4); ?></td>
-                                <td>
+                                <td class="action-cell">
                                     <div class="table-action-group">
                                         <a href="<?= site_url('transactions/packing-lists?edit=' . $row['id']); ?>" class="btn btn-sm btn-outline-primary">Edit</a>
                                         <a href="<?= site_url('transactions/print-packing-list/' . $row['id']); ?>" target="_blank" class="btn btn-sm btn-primary">Print</a>
