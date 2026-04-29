@@ -1,13 +1,21 @@
 <?php
 $edit = isset($edit) && is_array($edit) ? $edit : null;
+$GLOBALS['edit'] = $edit;
 $items = !empty($edit_items) ? $edit_items : [[
     'description' => 'Used Cooking Oil Supply / Export Documentation Assistance',
     'agency' => 'Supplier / Customs / Related Authority',
     'duration_text' => 'To be confirmed',
     'amount' => 0
 ]];
-function qf($k, $d = '') { global $edit; return e($edit[$k] ?? $d); }
-function selected_qf($k, $v, $d = '') { global $edit; $cur = $edit[$k] ?? $d; return ((string)$cur === (string)$v) ? 'selected' : ''; }
+function qf($k, $d = '') {
+    $currentEdit = $GLOBALS['edit'] ?? null;
+    return e(is_array($currentEdit) ? ($currentEdit[$k] ?? $d) : $d);
+}
+function selected_qf($k, $v, $d = '') {
+    $currentEdit = $GLOBALS['edit'] ?? null;
+    $cur = is_array($currentEdit) ? ($currentEdit[$k] ?? $d) : $d;
+    return ((string)$cur === (string)$v) ? 'selected' : '';
+}
 $docTypeLabels = [
     'commercial_proposal' => 'Commercial Proposal',
     'business_proposal'   => 'Business Proposal',
@@ -67,6 +75,23 @@ $offerTypeLabels = [
                         <label class="form-label">Currency</label>
                         <input type="text" name="currency_text" class="form-control" value="<?= qf('currency_text', 'IDR'); ?>" placeholder="IDR / USD">
                     </div>
+                    <div class="col-md-3">
+                        <label class="form-label">PPN (%)</label>
+                        <input type="number" step="0.01" name="ppn_percent" id="ppn_percent" class="form-control" value="<?= qf('ppn_percent', '11'); ?>">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">PPH (%) <small class="text-muted">dikurangi</small></label>
+                        <input type="number" step="0.01" name="pph_percent" id="pph_percent" class="form-control" value="<?= qf('pph_percent', '2'); ?>">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Show Summary</label>
+                        <div class="form-check form-switch mt-2">
+                            <input class="form-check-input" type="checkbox" role="switch" id="show_summary" name="show_summary" value="1" <?= !isset($edit['show_summary']) || (int)($edit['show_summary'] ?? 1) === 1 ? 'checked' : ''; ?>>
+                            <label class="form-check-label" for="show_summary">ON / OFF</label>
+                        </div>
+                        <small class="text-muted">Matikan jika tidak ingin menampilkan summary di print.</small>
+                    </div>
+
                     <div class="col-md-3">
                         <label class="form-label">Validity Offer</label>
                         <input type="text" name="validity_offer" class="form-control" value="<?= qf('validity_offer', '7 days from issued date'); ?>" placeholder="e.g. 7 days">
@@ -128,7 +153,7 @@ $offerTypeLabels = [
                         </tbody>
                         <tfoot>
                             <tr>
-                                <th colspan="3" class="text-end">Total</th>
+                                <th colspan="3" class="text-end">Grand Total (Subtotal + PPN - PPH)</th>
                                 <th><input type="text" class="form-control" id="inquiry-grand-total" readonly></th>
                                 <th></th>
                             </tr>
@@ -212,8 +237,20 @@ $offerTypeLabels = [
 
 <script>
 function fmt(n){return parseFloat(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}
-function total(){let t=0;document.querySelectorAll('.inquiry-amount').forEach(e=>t+=parseFloat(e.value||0));document.getElementById('inquiry-grand-total').value=fmt(t)}
-function bind(r){r.querySelector('.inquiry-amount').addEventListener('input',total);r.querySelector('.remove-row').addEventListener('click',()=>{if(document.querySelectorAll('#manual-inquiry-items-table tbody tr').length>1){r.remove();total()}})}
+function total(){
+    let subtotal=0;
+    document.querySelectorAll('.inquiry-amount').forEach(e=>subtotal+=parseFloat(e.value||0));
+    let ppn=parseFloat(document.getElementById('ppn_percent')?.value||0);
+    let pph=parseFloat(document.getElementById('pph_percent')?.value||0);
+    let grand=subtotal+(subtotal*ppn/100)-(subtotal*pph/100);
+    document.getElementById('inquiry-grand-total').value=fmt(grand);
+}
+function bind(r){
+    r.querySelector('.inquiry-amount').addEventListener('input',total);
+    r.querySelector('.remove-row').addEventListener('click',()=>{if(document.querySelectorAll('#manual-inquiry-items-table tbody tr').length>1){r.remove();total()}});
+}
+document.getElementById('ppn_percent')?.addEventListener('input',total);
+document.getElementById('pph_percent')?.addEventListener('input',total);
 document.querySelectorAll('#manual-inquiry-items-table tbody tr').forEach(bind);total();
 document.getElementById('add-inquiry-row').addEventListener('click',()=>{let tb=document.querySelector('#manual-inquiry-items-table tbody'),r=tb.querySelector('tr').cloneNode(true);r.querySelectorAll('input,textarea').forEach(i=>i.value=(i.name==='amount[]')?'0':'');tb.appendChild(r);bind(r);total()});
 function applyOfferType(){

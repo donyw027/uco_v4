@@ -1,9 +1,10 @@
 <?php
 $edit = isset($edit) && is_array($edit) ? $edit : null;
+$GLOBALS['edit'] = $edit;
 function fv($key, $default = '')
 {
-    global $edit;
-    return e($edit[$key] ?? $default);
+    $currentEdit = $GLOBALS['edit'] ?? null;
+    return e(is_array($currentEdit) ? ($currentEdit[$key] ?? $default) : $default);
 }
 ?>
 <div class="section-block">

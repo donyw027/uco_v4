@@ -282,6 +282,42 @@
             padding: 9px 8px;
         }
 
+
+        .bottom-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 10px;
+            page-break-inside: avoid;
+        }
+
+        .bottom-grid.no-summary {
+            grid-template-columns: 1fr;
+        }
+
+        .summary-table td {
+            padding: 6px 0;
+            border-bottom: 1px solid #e8eef6;
+            font-size: 11px;
+        }
+
+        .summary-table tr:last-child td {
+            border-bottom: none;
+            font-weight: 800;
+            color: #0f172a;
+        }
+
+        .summary-table .cur {
+            width: 45px;
+            color: #64748b;
+            text-align: center;
+        }
+
+        .summary-table .val {
+            text-align: right;
+            font-weight: 700;
+        }
+
         .sign-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -374,8 +410,41 @@
     ];
     $docTitle = $docTitles[$docType] ?? 'COMMERCIAL PROPOSAL';
     $docSubtitle = $docSubtitles[$offerType] ?? 'Product and service offer';
-    $agencyLabel = ($offerType === 'product') ? 'Specification' : (($offerType === 'service') ? 'Scope / Agency' : 'Scope / Specification');
-    $durationLabel = ($offerType === 'service') ? 'Timeline' : 'Lead Time';
+
+    // =========================
+    // PRINT BEHAVIOR SETTINGS
+    // =========================
+    // Bisa dikirim dari database: $inq['show_summary'] = 1 / 0
+    // Default tetap tampil agar dokumen lama tidak berubah.
+    $showSummary = !isset($inq['show_summary']) || (int)$inq['show_summary'] === 1;
+
+    // Product document: Quotation / product offer menampilkan Qty, Unit, Unit Price.
+    // Service document: Service Offer menyembunyikan Qty, Unit, Unit Price.
+    // Commercial Proposal campuran: kolom product hanya muncul kalau item punya qty/unit/unit_price.
+    $isServiceDoc = ($docType === 'service_offer' || $offerType === 'service');
+    $isProductDoc = ($docType === 'quotation' || $offerType === 'product');
+    $isMixedDoc   = (!$isServiceDoc && !$isProductDoc);
+
+    $hasQty = false;
+    $hasUnit = false;
+    $hasUnitPrice = false;
+    if (!empty($items)) {
+        foreach ($items as $row) {
+            if ((float)($row['qty'] ?? 0) > 0) $hasQty = true;
+            if (trim((string)($row['unit'] ?? $row['uom'] ?? '')) !== '') $hasUnit = true;
+            if ((float)($row['unit_price'] ?? $row['price'] ?? 0) > 0) $hasUnitPrice = true;
+        }
+    }
+
+    $isServiceDoc = ($docType === 'service_offer' || $offerType === 'service');
+
+    $agencyLabel   = $isServiceDoc ? 'Scope / Agency' : 'Scope / Specification';
+    $durationLabel = $isServiceDoc ? 'Timeline' : 'Duration / Lead Time';
+    $amountLabel   = $isServiceDoc ? 'Service Fee' : 'Amount';
+
+    $agencyLabel = $isProductDoc ? 'Specification' : ($isServiceDoc ? 'Scope / Agency' : 'Scope / Specification');
+    $durationLabel = $isServiceDoc ? 'Timeline' : 'Lead Time';
+    $amountLabel = $isServiceDoc ? 'Service Fee' : 'Amount';
     ?>
 
     <div class="page">
@@ -419,7 +488,7 @@
             </div>
 
             <div class="section-box">
-                <div class="box-title">Kepada / To</div>
+                <div class="box-title">To</div>
                 <div class="recipient-name"><?= e($inq['recipient_company'] ?? ''); ?></div>
                 <?php if (!empty($inq['recipient_pic'])): ?>
                     <div><strong>Attn:</strong> <?= e($inq['recipient_pic']); ?></div>
@@ -446,10 +515,14 @@
                 </div>
             <?php endif; ?>
 
-            <?php if (!empty($inq['scope_of_work'])): ?>
+            <?php
+            $scopeText = trim(preg_replace("/\n\s*\n+/", "\n", $inq['scope_of_work'] ?? ''));
+            ?>
+
+            <?php if ($scopeText !== ''): ?>
                 <div class="section-box">
                     <div class="box-title">Scope of Work / Offer Scope</div>
-                    <div class="opening-text"><?= nl2br(e($inq['scope_of_work'])); ?></div>
+                    <div class="opening-text"><?= nl2br(e($scopeText)); ?></div>
                 </div>
             <?php endif; ?>
 
@@ -466,48 +539,104 @@
                         <tr>
                             <th width="42">No</th>
                             <th>Description</th>
-                            <th width="160"><?= e($agencyLabel); ?></th>
-                            <th width="95"><?= e($durationLabel); ?></th>
-                            <th class="text-end" width="120">Amount</th>
+                            <th width="220"><?= e($agencyLabel); ?></th>
+                            <th width="125"><?= e($durationLabel); ?></th>
+                            <th class="text-end" width="130"><?= e($amountLabel); ?></th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php $no = 1;
-                        $total = 0; ?>
+                        $total = 0;
+                        $ppnPercent = isset($inq['ppn_percent']) ? (float)$inq['ppn_percent'] : 11;
+                        $pphPercent = isset($inq['pph_percent']) ? (float)$inq['pph_percent'] : 2; ?>
                         <?php foreach ($items as $it): ?>
-                            <?php $total += (float)($it['amount'] ?? 0); ?>
+                            <?php
+                            $qty = (float)($it['qty'] ?? 0);
+                            $unit = $it['unit'] ?? $it['uom'] ?? '';
+                            $unitPrice = (float)($it['unit_price'] ?? $it['price'] ?? 0);
+                            $amount = (float)($it['amount'] ?? 0);
+                            if ($amount <= 0 && $qty > 0 && $unitPrice > 0) {
+                                $amount = $qty * $unitPrice;
+                            }
+                            $total += $amount;
+                            ?>
                             <tr>
                                 <td class="num"><?= $no++; ?></td>
-                                <td><?= nl2br(e($it['description'])); ?></td>
-                                <td><?= e($it['agency'] ?? ''); ?></td>
-                                <td><?= e($it['duration_text'] ?? ''); ?></td>
-                                <td class="text-end amount"><?= format_money($it['amount']); ?></td>
+                                <td><?= nl2br(e($it['description'] ?? '')); ?></td>
+                                <td><?= nl2br(e($it['agency'] ?? '')); ?></td>
+                                <td><?= nl2br(e($it['duration_text'] ?? '')); ?></td>
+                                <td class="text-end amount"><?= format_money($amount); ?></td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
+                    <?php
+                    $ppnAmount = $total * $ppnPercent / 100;
+                    $pphAmount = $total * $pphPercent / 100;
+                    $grandTotal = $total + $ppnAmount - $pphAmount;
+
+                    ?>
                     <tfoot>
                         <tr>
-                            <th colspan="4" class="text-end">TOTAL (<?= e($inq['currency_text'] ?? 'IDR'); ?>)</th>
-                            <th class="text-end"><?= format_money($total); ?></th>
+                            <th colspan="4" class="text-end">
+                                TOTAL (<?= e($inq['currency_text'] ?? 'IDR'); ?>)
+                            </th>
+                            <th class="text-end"><?= format_money($grandTotal); ?></th>
                         </tr>
                     </tfoot>
                 </table>
             </div>
 
-            <?php if (!empty($inq['terms_text'])): ?>
-                <div class="section-box" style="margin-top:10px;">
+
+            <div class="bottom-grid <?= $showSummary ? '' : 'no-summary'; ?>">
+                <?php
+                $termsText = $inq['terms_text'] ?? '';
+                $termsText = str_replace(["\r\n", "\r"], "\n", $termsText);
+                $termsLines = array_filter(array_map('trim', explode("\n", $termsText)));
+                ?>
+
+                <div class="section-box" style="margin-bottom:0;">
                     <div class="box-title">Commercial Terms</div>
-                    <?= nl2br(e(trim(preg_replace("/\n\s*\n+/", "\n", $inq['terms_text'])))); ?>
+
+                    <?php foreach ($termsLines as $line): ?>
+                        <div class="terms-line">• <?= e(ltrim($line, "•- \t")); ?></div>
+                    <?php endforeach; ?>
                 </div>
-            <?php endif; ?>
+
+                <?php if ($showSummary): ?>
+                    <div class="section-box" style="margin-bottom:0;">
+                        <div class="box-title">Summary</div>
+                        <table class="summary-table">
+                            <tr>
+                                <td>Subtotal</td>
+                                <td class="cur"><?= e($inq['currency_text'] ?? 'IDR'); ?></td>
+                                <td class="val"><?= format_money($total); ?></td>
+                            </tr>
+                            <tr>
+                                <td>PPN <?= rtrim(rtrim(number_format($ppnPercent, 2, '.', ''), '0'), '.'); ?>%</td>
+                                <td class="cur"><?= e($inq['currency_text'] ?? 'IDR'); ?></td>
+                                <td class="val"><?= format_money($ppnAmount); ?></td>
+                            </tr>
+                            <tr>
+                                <td>PPH <?= rtrim(rtrim(number_format($pphPercent, 2, '.', ''), '0'), '.'); ?>%</td>
+                                <td class="cur"><?= e($inq['currency_text'] ?? 'IDR'); ?></td>
+                                <td class="val"><?= format_money($pphAmount); ?></td>
+                            </tr>
+                            <tr>
+                                <td>Grand Total</td>
+                                <td class="cur"><?= e($inq['currency_text'] ?? 'IDR'); ?></td>
+                                <td class="val"><?= format_money($grandTotal); ?></td>
+                            </tr>
+                        </table>
+                    </div>
+                <?php endif; ?>
+            </div>
 
             <?php if (!empty($inq['closing_text'])): ?>
-                <div class="section-box">
+                <div class="section-box" style="margin-top:10px;">
                     <div class="box-title">Closing</div>
                     <?= nl2br(e(trim(preg_replace("/\n\s*\n+/", "\n", $inq['closing_text'])))); ?>
                 </div>
             <?php endif; ?>
-
             <div class="sign-grid">
                 <div class="sign-box">
                     <div class="box-title">Offered By</div>

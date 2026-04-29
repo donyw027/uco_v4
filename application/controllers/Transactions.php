@@ -42,6 +42,9 @@ class Transactions extends MY_Controller
                 'terms_text'        => $this->input->post('terms_text', true),
                 'closing_text'      => $this->input->post('closing_text', true),
                 'currency_text'     => $this->input->post('currency_text', true) ?: 'IDR',
+                'ppn_percent'       => (float)($this->input->post('ppn_percent') ?? 11),
+                'pph_percent'       => (float)($this->input->post('pph_percent') ?? 2),
+                'show_summary'      => $this->input->post('show_summary') ? 1 : 0,
                 'created_by'        => $this->user['id'] ?? null,
             ];
 
@@ -178,7 +181,8 @@ class Transactions extends MY_Controller
             }
 
             $paid_amount = (float)$this->input->post('paid_amount');
-
+            $ppn_percent = (float)($this->input->post('ppn_percent') ?? 11);
+            $pph_percent = (float)($this->input->post('pph_percent') ?? 2);
             $header = [
                 'invoice_no'            => $invoice_no,
                 'invoice_date'          => $this->input->post('invoice_date') ?: date('Y-m-d'),
@@ -191,8 +195,9 @@ class Transactions extends MY_Controller
                 'payment_term_text'     => $this->input->post('payment_term_text', true),
                 'subject'               => $this->input->post('subject', true),
                 'notes'                 => $this->input->post('notes', true),
+                'ppn_percent'           => $ppn_percent,
+                'pph_percent'           => $pph_percent,
                 'created_by'            => $this->user['id'] ?? null,
-
                 // summary fields
                 'subtotal_amount'       => 0,
                 'total_discount_amount' => 0,
@@ -203,16 +208,29 @@ class Transactions extends MY_Controller
             ];
 
             $items = [];
-            foreach ((array)$this->input->post('description') as $i => $desc) {
+            $descriptions = (array)$this->input->post('description');
+            $qtys = (array)$this->input->post('qty');
+            $units = (array)$this->input->post('unit');
+            $prices = (array)$this->input->post('unit_price');
+            foreach ($descriptions as $i => $desc) {
                 $items[] = [
                     'description'       => $desc,
-                    'qty'               => (float)($this->input->post('qty')[$i] ?? 0),
-                    'unit'              => $this->input->post('unit')[$i] ?? '',
-                    'unit_price'        => (float)($this->input->post('unit_price')[$i] ?? 0),
-                    'discount_percent'  => (float)($this->input->post('discount_percent')[$i] ?? 0),
-                    'tax_percent'       => (float)($this->input->post('tax_percent')[$i] ?? 0),
+                    'qty'               => (float)($qtys[$i] ?? 0),
+                    'unit'              => $units[$i] ?? '',
+                    'unit_price'        => (float)($prices[$i] ?? 0),
+                    'discount_percent'  => 0,
+                    'tax_percent'       => 0,
                 ];
             }
+            $subtotal_amount = 0;
+            foreach ($items as $calcItem) {
+                $subtotal_amount += ((float)($calcItem['qty'] ?? 0) * (float)($calcItem['unit_price'] ?? 0));
+            }
+            $header['subtotal_amount'] = $subtotal_amount;
+            $header['total_tax_amount'] = $subtotal_amount * ($ppn_percent / 100);
+            $header['total_discount_amount'] = $subtotal_amount * ($pph_percent / 100);
+            $header['total_amount'] = $header['subtotal_amount'] + $header['total_tax_amount'] - $header['total_discount_amount'];
+            $header['balance_amount'] = $header['total_amount'] - $paid_amount;
 
             if ($action === 'update') {
                 $id = (int)$this->input->post('id');
@@ -279,11 +297,13 @@ class Transactions extends MY_Controller
         ])->row_array();
 
         $subtotal_amount = 0;
-        $total_discount_amount = 0;
-        $total_tax_amount = 0;
+        $total_discount_amount = 0; // PPH amount
+        $total_tax_amount = 0; // PPN amount
         $grand_total = 0;
 
         $paid_amount = (float)($draft['header']['paid_amount'] ?? 0);
+        $ppn_percent = (float)($draft['header']['ppn_percent'] ?? 11);
+        $pph_percent = (float)($draft['header']['pph_percent'] ?? 2);
 
         $items = [];
 
@@ -291,31 +311,25 @@ class Transactions extends MY_Controller
             $description = trim((string)($it['description'] ?? ''));
             $qty = (float)($it['qty'] ?? 0);
             $unit_price = (float)($it['unit_price'] ?? 0);
-            $discount_percent = (float)($it['discount_percent'] ?? 0);
-            $tax_percent = (float)($it['tax_percent'] ?? 0);
 
             if ($description === '' || $qty <= 0) {
                 continue;
             }
 
             $subtotal = $qty * $unit_price;
-            $discount_amount = $subtotal * ($discount_percent / 100);
-            $dpp = $subtotal - $discount_amount;
-            $tax_amount = $dpp * ($tax_percent / 100);
-            $amount = $dpp + $tax_amount;
+            $discount_amount = 0;
+            $tax_amount = 0;
+            $amount = $subtotal;
 
             $subtotal_amount += $subtotal;
-            $total_discount_amount += $discount_amount;
-            $total_tax_amount += $tax_amount;
-            $grand_total += $amount;
 
             $items[] = [
                 'description'       => $description,
                 'qty'               => $qty,
                 'unit'              => $it['unit'] ?? '',
                 'unit_price'        => $unit_price,
-                'discount_percent'  => $discount_percent,
-                'tax_percent'       => $tax_percent,
+                'discount_percent'  => 0,
+                'tax_percent'       => 0,
                 'subtotal'          => $subtotal,
                 'discount_amount'   => $discount_amount,
                 'tax_amount'        => $tax_amount,
@@ -323,8 +337,10 @@ class Transactions extends MY_Controller
             ];
         }
 
+        $total_tax_amount = $subtotal_amount * ($ppn_percent / 100);
+        $total_discount_amount = $subtotal_amount * ($pph_percent / 100);
+        $grand_total = $subtotal_amount + $total_tax_amount - $total_discount_amount;
         $balance_amount = $grand_total - $paid_amount;
-
         $data['inv'] = [
             'invoice_no'            => $draft['header']['invoice_no'] ?: 'DRAFT-PREVIEW',
             'invoice_date'          => $draft['header']['invoice_date'] ?? date('Y-m-d'),
@@ -337,6 +353,8 @@ class Transactions extends MY_Controller
             'payment_term_text'     => $draft['header']['payment_term_text'] ?? '',
             'incoterm_text'         => $draft['header']['incoterm_text'] ?? '',
             'currency_code'         => $currency['currency_code'] ?? '',
+            'ppn_percent'           => $ppn_percent,
+            'pph_percent'           => $pph_percent,
             'subtotal_amount'       => $subtotal_amount,
             'total_discount_amount' => $total_discount_amount,
             'total_tax_amount'      => $total_tax_amount,

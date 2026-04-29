@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS `company_profile` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table uco_v4.company_profile: ~10 rows (approximately)
+-- Dumping data for table uco_v4.company_profile: ~1 rows (approximately)
 INSERT INTO `company_profile` (`id`, `company_name`, `address`, `phone`, `email`, `bank_info`, `signature_name`, `signature_title`) VALUES
 	(10, 'Uco Exportindo Constulting', 'Perum Majapahit, Pungging – Mojokerto', '+62-896-7257-4222', 'ucoexporindo@gmail.com', 'Mandiri - 1420026750074\r\nAccount Name : Uco Exportindo Constulting', 'Doni Wicaksono', 'Director Of Marketing');
 
@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS `customers` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table uco_v4.customers: ~11 rows (approximately)
+-- Dumping data for table uco_v4.customers: ~3 rows (approximately)
 INSERT INTO `customers` (`id`, `customer_code`, `company_name`, `pic_name`, `email`, `phone`, `address`, `country`, `is_active`) VALUES
 	(1, 'CUST-001', 'Customer 1 Trading', 'Customer PIC 1', 'customer1@mail.com', '+62-21-7700001', 'Jl. Customer No. 1, Jakarta', 'Indonesia', 1),
 	(2, 'CUST-002', 'Customer 2 Trading', 'Customer PIC 2', 'customer2@mail.com', '+62-21-7700002', 'Jl. Customer No. 2, Jakarta', 'Indonesia', 1),
@@ -96,7 +96,7 @@ INSERT INTO `document_sequences` (`id`, `doc_type`, `yyyymm`, `last_number`) VAL
 	(10, 'SJ', '202603', 10),
 	(11, 'PL', '202604', 5),
 	(12, 'SO', '202604', 3),
-	(13, 'INV', '202604', 84);
+	(13, 'INV', '202604', 89);
 
 -- Dumping structure for table uco_v4.fee_slips
 CREATE TABLE IF NOT EXISTS `fee_slips` (
@@ -122,7 +122,7 @@ CREATE TABLE IF NOT EXISTS `fee_slips` (
   UNIQUE KEY `slip_no` (`slip_no`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table uco_v4.fee_slips: ~1 rows (approximately)
+-- Dumping data for table uco_v4.fee_slips: ~0 rows (approximately)
 INSERT INTO `fee_slips` (`id`, `slip_no`, `slip_date`, `period_text`, `payee_name`, `position_text`, `bank_account`, `payment_term`, `currency_text`, `description`, `notes`, `gross_fee`, `capital_contribution`, `deduction_amount`, `tax_amount`, `take_home_pay`, `created_by`, `created_at`) VALUES
 	(1, '31231', '2026-04-28', 'April 2026', '312', '123', '321', 'Monthly Fee Distribution', 'IDR', 'Fee distribution for consulting service related to:', 'Deduction is allocated as initial capital contribution based on mutual agreement.', 123132.00, 1231.00, 123.00, 12.00, 121766.00, 2, '2026-04-28 12:17:52');
 
@@ -134,7 +134,7 @@ CREATE TABLE IF NOT EXISTS `incoterms` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table uco_v4.incoterms: ~10 rows (approximately)
+-- Dumping data for table uco_v4.incoterms: ~11 rows (approximately)
 INSERT INTO `incoterms` (`id`, `incoterm_code`, `description`) VALUES
 	(1, 'FOB', 'Free On Board'),
 	(2, 'CIF', 'Cost Insurance and Freight'),
@@ -162,7 +162,7 @@ CREATE TABLE IF NOT EXISTS `invoices` (
   CONSTRAINT `fk_inv_so` FOREIGN KEY (`sales_order_id`) REFERENCES `sales_orders` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table uco_v4.invoices: ~12 rows (approximately)
+-- Dumping data for table uco_v4.invoices: ~0 rows (approximately)
 INSERT INTO `invoices` (`id`, `sales_order_id`, `invoice_no`, `invoice_date`, `notes`, `total_amount`, `created_at`) VALUES
 	(14, 14, 'INV-UCO/202604/0084', '2026-04-28', '', 1476000.00, '2026-04-28 13:13:48');
 
@@ -181,7 +181,7 @@ CREATE TABLE IF NOT EXISTS `invoice_items` (
   CONSTRAINT `fk_invitem_soitem` FOREIGN KEY (`sales_order_item_id`) REFERENCES `sales_order_items` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table uco_v4.invoice_items: ~15 rows (approximately)
+-- Dumping data for table uco_v4.invoice_items: ~1 rows (approximately)
 INSERT INTO `invoice_items` (`id`, `invoice_id`, `sales_order_item_id`, `qty`, `unit_price`, `amount`) VALUES
 	(17, 14, 27, 123.00, 12000.00, 1476000.00);
 
@@ -198,6 +198,8 @@ CREATE TABLE IF NOT EXISTS `manual_inquiries` (
   `terms_text` text COLLATE utf8mb4_general_ci,
   `closing_text` text COLLATE utf8mb4_general_ci,
   `currency_text` varchar(20) COLLATE utf8mb4_general_ci DEFAULT 'IDR',
+  `ppn_percent` decimal(5,2) NOT NULL DEFAULT '11.00',
+  `pph_percent` decimal(5,2) NOT NULL DEFAULT '2.00',
   `created_by` int DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `document_type` enum('commercial_proposal','business_proposal','quotation','service_offer') COLLATE utf8mb4_general_ci DEFAULT 'commercial_proposal',
@@ -205,15 +207,16 @@ CREATE TABLE IF NOT EXISTS `manual_inquiries` (
   `validity_offer` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `lead_time` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `scope_of_work` text COLLATE utf8mb4_general_ci,
+  `show_summary` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   UNIQUE KEY `proposal_no` (`proposal_no`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table uco_v4.manual_inquiries: ~2 rows (approximately)
-INSERT INTO `manual_inquiries` (`id`, `proposal_no`, `proposal_date`, `recipient_company`, `recipient_address`, `recipient_pic`, `subject`, `opening_text`, `terms_text`, `closing_text`, `currency_text`, `created_by`, `created_at`, `document_type`, `offer_type`, `validity_offer`, `lead_time`, `scope_of_work`) VALUES
-	(1, 'INQ-UCO/202604/8801', '2026-04-14', 'PT. CANADA GREEN GATE', 'Pasuruan – Indonesia', 'PIC', 'Pengurusan Izin Penambahan Barang Jadi Kategori DHE SDA', 'Bersama ini kami menyampaikan penawaran jasa pengurusan perizinan penambahan barang jadi kategori DHE SDA yang akan berhubungan dengan KPPBC Pusat serta Kementerian Perdagangan Republik Indonesia.', '• Pembayaran: 30% saat SPK, 70% setelah izin terbit\r\n• Dokumen disiapkan oleh pihak perusahaan\r\n• Biaya belum termasuk perubahan regulasi tambahan', 'Demikian proposal ini kami sampaikan. Kami berharap dapat menjalin kerja sama yang baik dengan perusahaan Bapak/Ibu.', 'IDR', 1, '2026-04-14 13:04:38', 'commercial_proposal', 'product', NULL, NULL, NULL),
-	(3, 'INQ-UCO/202604/1831', '2026-04-25', 'UCO Exportindo Consulting', 'Email: sales@ucoexportindo.com\r\nIndonesia', '', 'OFFER SHEET USED COOKING OIL (UCO)', 'Product: Used Cooking Oil (UCO)', 'Net 30 Days before shipment by T/T\r\nAll banking charges are borne by the buyer.', 'NOTES\r\n-Final quantity subject to mutual agreement\r\n-Product availability subject to stock confirmation\r\n-SGS / inspection can be arranged upon request\r\n-Packaging and loading details will be confirmed before shipment\r\n-Prices are subject to market fluctuation and may change without prior notice\r\n\r\nWe look forward to establishing long-term business cooperation with your esteemed company.\r\n\r\nBest Regards,', 'USD', 2, '2026-04-25 13:35:05', 'commercial_proposal', 'product', NULL, NULL, NULL),
-	(4, 'INQ-UCO/202604/4567', '2026-04-28', 'PT Sentosa', 'Malang ID', 'Doni', 'Commercial Offer for Product Supply &amp; Consulting Service', 'Thank you for your interest in our products and services. We are pleased to submit this offer for your review and consideration.', '• Price is subject to final scope, quantity, and destination confirmation.\r\n• Payment term will be agreed before project execution or shipment.\r\n• Banking charges, tax, customs duties, and third-party fees are excluded unless stated otherwise.', 'We hope this offer meets your requirements. Please feel free to contact us for further discussion or adjustment.', 'IDR', 3, '2026-04-28 13:24:59', 'commercial_proposal', 'product_service', '7 days from issued date', 'To be confirmed', 'Product supply, sourcing support, export/import consultation, documentation assistance, and coordination based on client requirements.');
+-- Dumping data for table uco_v4.manual_inquiries: ~3 rows (approximately)
+INSERT INTO `manual_inquiries` (`id`, `proposal_no`, `proposal_date`, `recipient_company`, `recipient_address`, `recipient_pic`, `subject`, `opening_text`, `terms_text`, `closing_text`, `currency_text`, `ppn_percent`, `pph_percent`, `created_by`, `created_at`, `document_type`, `offer_type`, `validity_offer`, `lead_time`, `scope_of_work`, `show_summary`) VALUES
+	(1, 'INQ-UCO/202604/8801', '2026-04-14', 'PT. CANADA GREEN GATE', 'Pasuruan – Indonesia', 'PIC', 'Pengurusan Izin Penambahan Barang Jadi Kategori DHE SDA', 'Bersama ini kami menyampaikan penawaran jasa pengurusan perizinan penambahan barang jadi kategori DHE SDA yang akan berhubungan dengan KPPBC Pusat serta Kementerian Perdagangan Republik Indonesia.', '• Pembayaran: 30% saat SPK, 70% setelah izin terbit\r\n• Dokumen disiapkan oleh pihak perusahaan\r\n• Biaya belum termasuk perubahan regulasi tambahan', 'Demikian proposal ini kami sampaikan. Kami berharap dapat menjalin kerja sama yang baik dengan perusahaan Bapak/Ibu.', 'IDR', 11.00, 2.00, 1, '2026-04-14 13:04:38', 'commercial_proposal', 'product', NULL, NULL, NULL, 1),
+	(3, 'INQ-UCO/202604/1831', '2026-04-25', 'UCO Exportindo Consulting', 'Email: sales@ucoexportindo.com\r\nIndonesia', '', 'OFFER SHEET USED COOKING OIL (UCO)', 'Product: Used Cooking Oil (UCO)', 'Net 30 Days before shipment by T/T\r\nAll banking charges are borne by the buyer.', 'NOTES\r\n-Final quantity subject to mutual agreement\r\n-Product availability subject to stock confirmation\r\n-SGS / inspection can be arranged upon request\r\n-Packaging and loading details will be confirmed before shipment\r\n-Prices are subject to market fluctuation and may change without prior notice\r\n\r\nWe look forward to establishing long-term business cooperation with your esteemed company.\r\n\r\nBest Regards,', 'USD', 11.00, 2.00, 2, '2026-04-25 13:35:05', 'commercial_proposal', 'product', '7 days from issued date', 'To be confirmed', 'Product supply, sourcing support, export/import consultation, documentation assistance, and coordination based on client requirements.', 0),
+	(5, 'INQ-UCO/202604/7225', '2026-04-29', 'PT. Canada Green Gate', 'Jl. Kraton Industri Raya No.03, Pejangkungan, Kec. Rembang, Pasuruan, Jawa Timur 67152\r\n', '-', 'Offer - processing of permits for the addition of finished goods in the form of caustic soda liquid', 'Thank you for your interest in our products and services. We are pleased to submit this offer for your review and consideration.', '-Price is subject to final permit scope, required documentation, and authority requirements confirmation.\r\n-Payment term will be agreed before project execution.\r\n-Government fees, official charges, tax, customs duties, and third-party administrative costs are excluded unless stated otherwise.\r\n', 'We hope this offer meets your requirements. Please feel free to contact us for further discussion or adjustment.', 'IDR', 11.00, 2.00, 2, '2026-04-29 11:35:31', 'service_offer', 'service', '7 days from issued date', 'To be confirmed', 'Processing of permits for the addition of finished goods in the form of liquid caustic soda, including regulatory consultation, documentation preparation, submission support, coordination with related authorities, and administrative assistance based on client requirements.\r\n', 1);
 
 -- Dumping structure for table uco_v4.manual_inquiry_items
 CREATE TABLE IF NOT EXISTS `manual_inquiry_items` (
@@ -226,15 +229,15 @@ CREATE TABLE IF NOT EXISTS `manual_inquiry_items` (
   PRIMARY KEY (`id`),
   KEY `manual_inquiry_id` (`manual_inquiry_id`),
   CONSTRAINT `fk_manual_inquiry_items_header` FOREIGN KEY (`manual_inquiry_id`) REFERENCES `manual_inquiries` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table uco_v4.manual_inquiry_items: ~4 rows (approximately)
+-- Dumping data for table uco_v4.manual_inquiry_items: ~5 rows (approximately)
 INSERT INTO `manual_inquiry_items` (`id`, `manual_inquiry_id`, `description`, `agency`, `duration_text`, `amount`) VALUES
 	(1, 1, 'Registrasi & Izin Penambahan Barang Jadi (Calcium Soap & Shortening)', 'KPPBC Pusat & Kemendag', '±5 Hari Kerja', 32000000.00),
-	(3, 3, 'FFA: 2–5% | MI: ≤ 2%', '', 'KG', 1.40),
-	(4, 3, 'FFA: 5–10% | MI: ≤ 2%', '', 'KG', 1.15),
-	(5, 3, 'FFA: 10–15% | MI: ≤ 2%', '', 'KG', 1.05),
-	(8, 4, 'Used Cooking Oil Supply / Export Documentation Assistance', 'Supplier / Customs / Related Authority', 'To be confirmed', 12000000.00);
+	(16, 5, 'Services - processing permits for the addition of\r\nfinished goods caustic soda liquid\r\n', '-', 'To be confirmed', 32000000.00),
+	(17, 3, 'FFA: 2–5% | MI: ≤ 2%', '', 'KG', 1.40),
+	(18, 3, 'FFA: 5–10% | MI: ≤ 2%', '', 'KG', 1.15),
+	(19, 3, 'FFA: 10–15% | MI: ≤ 2%', '', 'KG', 1.05);
 
 -- Dumping structure for table uco_v4.manual_invoices
 CREATE TABLE IF NOT EXISTS `manual_invoices` (
@@ -260,6 +263,8 @@ CREATE TABLE IF NOT EXISTS `manual_invoices` (
   `balance_amount` decimal(18,2) NOT NULL DEFAULT '0.00',
   `created_by` int DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `ppn_percent` decimal(5,2) NOT NULL DEFAULT '11.00',
+  `pph_percent` decimal(5,2) NOT NULL DEFAULT '2.00',
   PRIMARY KEY (`id`),
   UNIQUE KEY `invoice_no` (`invoice_no`),
   KEY `currency_id` (`currency_id`),
@@ -268,8 +273,8 @@ CREATE TABLE IF NOT EXISTS `manual_invoices` (
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Dumping data for table uco_v4.manual_invoices: ~2 rows (approximately)
-INSERT INTO `manual_invoices` (`id`, `invoice_no`, `invoice_date`, `customer_name`, `customer_address`, `customer_country`, `pic_name`, `currency_id`, `payment_term_text`, `incoterm_text`, `incoterm_id`, `payment_term_id`, `subject`, `notes`, `total_amount`, `subtotal_amount`, `total_discount_amount`, `total_tax_amount`, `paid_amount`, `balance_amount`, `created_by`, `created_at`) VALUES
-	(7, 'INV-UCO/202604/0082', '2026-04-15', 'PT. CANADA GREEN GATE', 'Jl. Kraton Industri Raya No.03,  Pejangkungan,Kec. Rembang, Pasuruan, Jawa Timur 67152\r\n', 'Pasuruan – Indonesia', '', 2, '30% saat SPK, 70% setelah izin terbit', '-', NULL, NULL, 'Invoice', '-', 32640000.00, 32000000.00, 0.00, 640000.00, 9600000.00, 23040000.00, 2, '2026-04-15 14:44:57');
+INSERT INTO `manual_invoices` (`id`, `invoice_no`, `invoice_date`, `customer_name`, `customer_address`, `customer_country`, `pic_name`, `currency_id`, `payment_term_text`, `incoterm_text`, `incoterm_id`, `payment_term_id`, `subject`, `notes`, `total_amount`, `subtotal_amount`, `total_discount_amount`, `total_tax_amount`, `paid_amount`, `balance_amount`, `created_by`, `created_at`, `ppn_percent`, `pph_percent`) VALUES
+	(7, 'INV-UCO/202604/0082', '2026-04-15', 'PT. CANADA GREEN GATE', 'Jl. Kraton Industri Raya No.03,  Pejangkungan,Kec. Rembang, Pasuruan, Jawa Timur 67152\r\n', 'Pasuruan – Indonesia', '', 2, '30% saat SPK, 70% setelah izin terbit', '-', NULL, NULL, 'Invoice', '-', 32640000.00, 32000000.00, 0.00, 640000.00, 9600000.00, 23040000.00, 2, '2026-04-15 14:44:57', 11.00, 2.00);
 
 -- Dumping structure for table uco_v4.manual_invoice_items
 CREATE TABLE IF NOT EXISTS `manual_invoice_items` (
@@ -312,7 +317,7 @@ CREATE TABLE IF NOT EXISTS `packing_lists` (
   CONSTRAINT `fk_pl_so` FOREIGN KEY (`sales_order_id`) REFERENCES `sales_orders` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table uco_v4.packing_lists: ~14 rows (approximately)
+-- Dumping data for table uco_v4.packing_lists: ~1 rows (approximately)
 INSERT INTO `packing_lists` (`id`, `sales_order_id`, `pl_no`, `pl_date`, `marks_numbers`, `total_packages`, `gross_weight`, `net_weight`, `cbm`, `created_at`) VALUES
 	(16, 14, 'PL-UCO/202604/0005', '2026-04-28', '', 123.00, 23370.00, 22140.00, 135.3000, '2026-04-28 13:13:45');
 
@@ -333,7 +338,7 @@ CREATE TABLE IF NOT EXISTS `packing_list_items` (
   CONSTRAINT `fk_pli_soitem` FOREIGN KEY (`sales_order_item_id`) REFERENCES `sales_order_items` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table uco_v4.packing_list_items: ~21 rows (approximately)
+-- Dumping data for table uco_v4.packing_list_items: ~0 rows (approximately)
 INSERT INTO `packing_list_items` (`id`, `packing_list_id`, `sales_order_item_id`, `package_count`, `qty`, `net_weight`, `gross_weight`, `cbm`) VALUES
 	(23, 16, 27, 123.00, 123.00, 22140.00, 23370.00, 135.3000);
 
@@ -377,10 +382,10 @@ CREATE TABLE IF NOT EXISTS `products` (
   CONSTRAINT `fk_products_uom` FOREIGN KEY (`uom_id`) REFERENCES `uoms` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table uco_v4.products: ~11 rows (approximately)
+-- Dumping data for table uco_v4.products: ~2 rows (approximately)
 INSERT INTO `products` (`id`, `code`, `product_name`, `description`, `uom_id`, `sales_price`, `nw_unit`, `gw_unit`, `cbm_unit`, `package_unit`, `is_active`, `created_at`) VALUES
-	(1, 'PRD-001', 'Used Cooking Oil A', 'Used Cooking Oil A sample master data', 2, 12000.00, 180.0000, 190.0000, 1.1000, 1.0000, 1, '2026-03-09 06:02:47'),
-	(2, 'PRD-002', 'Used Cooking Oil B', 'Used Cooking Oil B sample master data', 2, 11850.00, 175.0000, 185.0000, 1.0800, 1.0000, 1, '2026-03-09 06:02:47');
+	(1, 'PRD-001', 'Used Cooking Oil A', 'Used Cooking Oil A', 2, 12000.00, 180.0000, 190.0000, 1.1000, 1.0000, 1, '2026-03-09 06:02:47'),
+	(2, 'PRD-002', 'Used Cooking Oil B', 'Used Cooking Oil B ', 2, 11850.00, 175.0000, 185.0000, 1.0800, 1.0000, 1, '2026-03-09 06:02:47');
 
 -- Dumping structure for table uco_v4.sales_orders
 CREATE TABLE IF NOT EXISTS `sales_orders` (
@@ -414,7 +419,7 @@ CREATE TABLE IF NOT EXISTS `sales_orders` (
   CONSTRAINT `fk_so_warehouse` FOREIGN KEY (`warehouse_id`) REFERENCES `warehouses` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table uco_v4.sales_orders: ~12 rows (approximately)
+-- Dumping data for table uco_v4.sales_orders: ~0 rows (approximately)
 INSERT INTO `sales_orders` (`id`, `so_no`, `order_date`, `customer_id`, `currency_id`, `incoterm_id`, `payment_term_id`, `warehouse_id`, `destination_port`, `remarks`, `created_by`, `total_amount`, `status`, `created_at`) VALUES
 	(14, 'SO-UCO/202604/0003', '2026-04-28', 3, 2, 5, 10, 1, '321', '23123', 3, 1476000.00, 'CONFIRMED', '2026-04-28 13:13:43');
 
@@ -434,7 +439,7 @@ CREATE TABLE IF NOT EXISTS `sales_order_items` (
   CONSTRAINT `fk_so_item_so` FOREIGN KEY (`sales_order_id`) REFERENCES `sales_orders` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table uco_v4.sales_order_items: ~25 rows (approximately)
+-- Dumping data for table uco_v4.sales_order_items: ~0 rows (approximately)
 INSERT INTO `sales_order_items` (`id`, `sales_order_id`, `product_id`, `description`, `qty`, `unit_price`, `amount`) VALUES
 	(27, 14, 1, '', 123.00, 12000.00, 1476000.00);
 
@@ -461,7 +466,7 @@ CREATE TABLE IF NOT EXISTS `stock_movements` (
   CONSTRAINT `fk_stock_wh` FOREIGN KEY (`warehouse_id`) REFERENCES `warehouses` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table uco_v4.stock_movements: ~16 rows (approximately)
+-- Dumping data for table uco_v4.stock_movements: ~0 rows (approximately)
 
 -- Dumping structure for table uco_v4.suppliers
 CREATE TABLE IF NOT EXISTS `suppliers` (
@@ -475,7 +480,7 @@ CREATE TABLE IF NOT EXISTS `suppliers` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table uco_v4.suppliers: ~11 rows (approximately)
+-- Dumping data for table uco_v4.suppliers: ~3 rows (approximately)
 INSERT INTO `suppliers` (`id`, `company_name`, `pic_name`, `email`, `phone`, `address`, `country`) VALUES
 	(1, 'Supplier 1', 'PIC Supplier 1', 'supplier1@mail.com', '+62-31-8800001', 'Jl. Supplier No. 1, Surabaya', 'Indonesia'),
 	(2, 'Supplier 2', 'PIC Supplier 2', 'supplier2@mail.com', '+62-31-8800002', 'Jl. Supplier No. 2, Surabaya', 'Indonesia'),
@@ -488,7 +493,7 @@ CREATE TABLE IF NOT EXISTS `uoms` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table uco_v4.uoms: ~11 rows (approximately)
+-- Dumping data for table uco_v4.uoms: ~10 rows (approximately)
 INSERT INTO `uoms` (`id`, `uom_name`) VALUES
 	(1, 'KG'),
 	(2, 'LTR'),
@@ -514,7 +519,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   UNIQUE KEY `username` (`username`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table uco_v4.users: ~4 rows (approximately)
+-- Dumping data for table uco_v4.users: ~3 rows (approximately)
 INSERT INTO `users` (`id`, `nama`, `username`, `password`, `role`, `is_active`, `created_at`) VALUES
 	(2, 'doni', 'doni', '$2y$10$xFf6ogs.jel.1GcDDw.P2eJIP9g5FjP9jF7QFIs.hTfTgR.3KUTnq', 'admin', 1, '2026-03-09 06:05:57'),
 	(3, 'rizky', 'rizky', '$2y$10$19RWWu/QMOmeibRsOj9l6O4jrszaY8PKfutrK4kYv35werPChGn.6', 'admin', 1, '2026-03-09 06:06:05'),
@@ -530,7 +535,7 @@ CREATE TABLE IF NOT EXISTS `warehouses` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table uco_v4.warehouses: ~10 rows (approximately)
+-- Dumping data for table uco_v4.warehouses: ~3 rows (approximately)
 INSERT INTO `warehouses` (`id`, `code`, `warehouse_name`, `location`, `is_active`) VALUES
 	(1, 'WH-01', 'Main Warehouse', 'Location 1, East Java', 1),
 	(7, 'WH-07', 'Finished Goods A', 'Location 7, East Java', 1);

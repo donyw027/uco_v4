@@ -17,31 +17,39 @@
             <div class="col-lg-5 d-none d-lg-block">
                 <div class="login-side h-100">
                     <div class="login-badge mb-4">
-                        <i class="bi bi-shield-check"></i> Secure trade operations panel
+                        <i class="bi bi-briefcase-fill"></i> UCO Exportindo Consulting Operation Panel
                     </div>
 
-                    <h1 class="display-6 fw-bold mb-3">Welcome back to UCO Exportindo Consulting</h1>
+                    <h1 class="display-6 fw-bold mb-3">
+                        Welcome back to UCO Exportindo Consulting
+                    </h1>
 
                     <p class="mb-4 text-white-50">
-                        Access the system to manage export documents, shipment coordination, inventory, and operational data in one professional workspace.
+                        Access the integrated system to manage commercial proposals, service offers, manual inquiries, invoices, export documentation, and business operations in one professional workspace.
                     </p>
 
                     <div class="d-grid gap-3">
+
                         <div class="metric-mini bg-transparent border border-light-subtle text-white">
                             <div>
-                                <div class="label text-white-50">Module access</div>
-                                <div class="big text-white">SO / PL / Invoice / Inventory</div>
+                                <div class="label text-white-50">Module Access</div>
+                                <div class="big text-white">
+                                    Inquiry / Invoice / SO / PL / Inventory
+                                </div>
                             </div>
-                            <i class="bi bi-box-arrow-in-right fs-4"></i>
+                            <i class="bi bi-folder-check fs-4"></i>
                         </div>
 
                         <div class="metric-mini bg-transparent border border-light-subtle text-white">
                             <div>
-                                <div class="label text-white-50">Purpose</div>
-                                <div class="big text-white">Export and trade control panel</div>
+                                <div class="label text-white-50">Business Scope</div>
+                                <div class="big text-white">
+                                    Export Supply, Consulting & Trade Services
+                                </div>
                             </div>
-                            <i class="bi bi-globe2 fs-4"></i>
+                            <i class="bi bi-globe-asia-australia fs-4"></i>
                         </div>
+
                     </div>
                 </div>
             </div>

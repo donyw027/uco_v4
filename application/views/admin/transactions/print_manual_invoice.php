@@ -293,38 +293,30 @@
             </div>
 
             <?php
-            $currencyCode         = $inv['currency_code'] ?? '';
-            $subtotalAmount       = (float)($inv['subtotal_amount'] ?? 0);
-            $totalDiscountAmount  = (float)($inv['total_discount_amount'] ?? 0);
-            $totalTaxAmount       = (float)($inv['total_tax_amount'] ?? 0);
-            $grandTotal           = (float)($inv['total_amount'] ?? 0);
-            $paidAmount           = (float)($inv['paid_amount'] ?? 0);
-            $balanceAmount        = (float)($inv['balance_amount'] ?? ($grandTotal - $paidAmount));
-
+            $currencyCode = $inv['currency_code'] ?? '';
+            $subtotalAmount = 0;
             $showQtyUnit = false;
-            $showDiscount = false;
-            $showTax = false;
-
             foreach ($items as $it) {
                 $qty = (float)($it['qty'] ?? 0);
                 $unit = trim((string)($it['unit'] ?? ''));
-                $discount = (float)($it['discount_percent'] ?? 0);
-                $tax = (float)($it['tax_percent'] ?? 0);
-
+                $unitPrice = (float)($it['unit_price'] ?? 0);
+                $subtotalAmount += $qty * $unitPrice;
                 if ($unit !== '' || $qty != 1) {
                     $showQtyUnit = true;
                 }
-
-                if ($discount > 0) {
-                    $showDiscount = true;
-                }
-
-                if ($tax > 0) {
-                    $showTax = true;
-                }
             }
+            if ($subtotalAmount <= 0) {
+                $subtotalAmount = (float)($inv['subtotal_amount'] ?? 0);
+            }
+            $ppnPercent = isset($inv['ppn_percent']) ? (float)$inv['ppn_percent'] : (($subtotalAmount > 0) ? (((float)($inv['total_tax_amount'] ?? 0) / $subtotalAmount) * 100) : 0);
+            $pphPercent = isset($inv['pph_percent']) ? (float)$inv['pph_percent'] : (($subtotalAmount > 0) ? (((float)($inv['total_discount_amount'] ?? 0) / $subtotalAmount) * 100) : 0);
+            $totalTaxAmount = $subtotalAmount * ($ppnPercent / 100);
+            $totalDiscountAmount = $subtotalAmount * ($pphPercent / 100);
+            $grandTotal = $subtotalAmount + $totalTaxAmount - $totalDiscountAmount;
+            $paidAmount = (float)($inv['paid_amount'] ?? 0);
+            $balanceAmount = $grandTotal - $paidAmount;
+            $fmtPercent = function($v) { return rtrim(rtrim(number_format((float)$v, 2, '.', ''), '0'), '.'); };
             ?>
-
             <div class="table-responsive mb-4">
                 <table class="table table-bordered align-middle mb-0">
                     <thead>
@@ -340,14 +332,6 @@
                                 <th class="money-cell" width="130">Unit Price</th>
                             <?php endif; ?>
 
-                            <?php if ($showDiscount): ?>
-                                <th class="money-cell" width="90">Discount %</th>
-                            <?php endif; ?>
-
-                            <?php if ($showTax): ?>
-                                <th class="money-cell" width="80">Tax %</th>
-                            <?php endif; ?>
-
                             <th class="money-cell fw-semibold" width="145">Amount</th>
                         </tr>
                     </thead>
@@ -358,39 +342,25 @@
                                 <?php
                                 $qty = (float)($it['qty'] ?? 0);
                                 $unit = trim((string)($it['unit'] ?? ''));
-                                $discount = (float)($it['discount_percent'] ?? 0);
-                                $tax = (float)($it['tax_percent'] ?? 0);
+                                $unitPrice = (float)($it['unit_price'] ?? 0);
+                                $lineAmount = $qty * $unitPrice;
                                 ?>
                                 <tr>
                                     <td><?= $no++; ?></td>
                                     <td class="desc-cell"><?= e($it['description'] ?? ''); ?></td>
-
                                     <?php if ($showQtyUnit): ?>
                                         <td class="text-end"><?= $qty == 0 ? '' : rtrim(rtrim(number_format($qty, 2, '.', ','), '0'), '.'); ?></td>
                                         <td><?= e($unit); ?></td>
-                                        <td class="text-end"><?= e($currencyCode); ?> <?= format_money($it['unit_price'] ?? 0); ?></td>
+                                        <td class="text-end"><?= e($currencyCode); ?> <?= format_money($unitPrice); ?></td>
                                     <?php else: ?>
-                                        <td class="text-end"><?= e($currencyCode); ?> <?= format_money($it['unit_price'] ?? 0); ?></td>
+                                        <td class="text-end"><?= e($currencyCode); ?> <?= format_money($unitPrice); ?></td>
                                     <?php endif; ?>
-
-                                    <?php if ($showDiscount): ?>
-                                        <td class="text-end">
-                                            <?= $discount > 0 ? rtrim(rtrim(number_format($discount, 2, '.', ','), '0'), '.') : '-'; ?>
-                                        </td>
-                                    <?php endif; ?>
-
-                                    <?php if ($showTax): ?>
-                                        <td class="text-end">
-                                            <?= $tax > 0 ? rtrim(rtrim(number_format($tax, 2, '.', ','), '0'), '.') : '-'; ?>
-                                        </td>
-                                    <?php endif; ?>
-
-                                    <td class="text-end fw-semibold"><?= e($currencyCode); ?> <?= format_money($it['amount'] ?? 0); ?></td>
+                                    <td class="text-end fw-semibold"><?= e($currencyCode); ?> <?= format_money($lineAmount); ?></td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="<?= 3 + ($showQtyUnit ? 2 : 0) + ($showDiscount ? 1 : 0) + ($showTax ? 1 : 0); ?>" class="text-center text-muted">
+                                <td colspan="<?= 3 + ($showQtyUnit ? 2 : 0); ?>" class="text-center text-muted">
                                     No item data.
                                 </td>
                             </tr>
@@ -398,7 +368,6 @@
                     </tbody>
                 </table>
             </div>
-
             <div class="row g-4 align-items-start">
                 <div class="col-md-6">
                     <div class="soft-box">
@@ -425,21 +394,20 @@
                         </div>
 
                         <div class="summary-row">
-                            <div class="label">Total Discount</div>
-                            <div class="value money">
-                                <span class="cur"><?= e($currencyCode); ?></span>
-                                <span class="amt"><?= format_money($totalDiscountAmount); ?></span>
-                            </div>
-                        </div>
-
-                        <div class="summary-row">
-                            <div class="label">Total Tax</div>
+                            <div class="label">PPN <?= $fmtPercent($ppnPercent); ?>%</div>
                             <div class="value money">
                                 <span class="cur"><?= e($currencyCode); ?></span>
                                 <span class="amt"><?= format_money($totalTaxAmount); ?></span>
                             </div>
                         </div>
 
+                        <div class="summary-row">
+                            <div class="label">PPH <?= $fmtPercent($pphPercent); ?>%</div>
+                            <div class="value money">
+                                <span class="cur"><?= e($currencyCode); ?></span>
+                                <span class="amt"><?= format_money($totalDiscountAmount); ?></span>
+                            </div>
+                        </div>
                         <div class="summary-row">
                             <div class="label">Grand Total</div>
                             <div class="value money">
