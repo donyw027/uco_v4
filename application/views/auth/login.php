@@ -64,7 +64,7 @@
 
                             <h4 class="mb-2">Admin Login</h4>
                             <p class="text-muted mb-0">
-                                Sign in to access the operational dashboard and trade management system.
+                                Sign in to access the operational dashboard.
                             </p>
                         </div>
 
