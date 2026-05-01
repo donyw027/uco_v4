@@ -7,7 +7,7 @@
                 </span>
 
                 <h1 class="hero-title mb-3">
-                    Reliable Export Consulting and Commodity Trading Partner from Indonesia
+                    ReliableReliableReliable Export Consulting and Commodity Trading Partner from Indonesia
                 </h1>
 
                 <p class="hero-text mb-4">
