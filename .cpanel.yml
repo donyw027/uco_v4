@@ -1,0 +1,13 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/ucop5517/public_html/
+
+    - /bin/rsync -a --delete \
+      --exclude='.git/' \
+      --exclude='.cpanel.yml' \
+      --exclude='.gitignore' \
+      --exclude='application/config/' \
+      --exclude='.htaccess' \
+      --exclude='uploads/' \
+      ./ $DEPLOYPATH
