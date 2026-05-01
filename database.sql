@@ -147,6 +147,24 @@ INSERT INTO `incoterms` (`id`, `incoterm_code`, `description`) VALUES
 	(9, 'CIP', 'Carriage and Insurance Paid To'),
 	(10, 'FAS', 'Free Alongside Ship');
 
+-- Dumping structure for table uco_v4.inquiry_messages
+CREATE TABLE IF NOT EXISTS `inquiry_messages` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `full_name` varchar(150) NOT NULL,
+  `email` varchar(150) NOT NULL,
+  `phone` varchar(50) DEFAULT NULL,
+  `subject` varchar(200) NOT NULL,
+  `message` text NOT NULL,
+  `status` varchar(20) DEFAULT 'new',
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Dumping data for table uco_v4.inquiry_messages: ~0 rows (approximately)
+INSERT INTO `inquiry_messages` (`id`, `full_name`, `email`, `phone`, `subject`, `message`, `status`, `created_at`, `updated_at`) VALUES
+	(4, 'Tes', 'doniwicaksono27@gmail.com', '6289672574222', 'Tes Subject', 'What is Lorem Ipsum?\r\nLorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry&#039;s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.\r\n\r\nWhy do we use it?\r\nIt is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using &#039;Content here, content here&#039;, making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for &#039;lorem ipsum&#039; will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).\r\n\r\n\r\nWhere does it come from?\r\nContrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of &quot;de Finibus Bonorum et Malorum&quot; (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, &quot;Lorem ipsum dolor sit amet..&quot;, comes from a line in section 1.10.32.', 'read', '2026-05-01 09:01:12', NULL);
+
 -- Dumping structure for table uco_v4.invoices
 CREATE TABLE IF NOT EXISTS `invoices` (
   `id` int NOT NULL AUTO_INCREMENT,
@@ -216,7 +234,7 @@ CREATE TABLE IF NOT EXISTS `manual_inquiries` (
 INSERT INTO `manual_inquiries` (`id`, `proposal_no`, `proposal_date`, `recipient_company`, `recipient_address`, `recipient_pic`, `subject`, `opening_text`, `terms_text`, `closing_text`, `currency_text`, `ppn_percent`, `pph_percent`, `created_by`, `created_at`, `document_type`, `offer_type`, `validity_offer`, `lead_time`, `scope_of_work`, `show_summary`) VALUES
 	(1, 'INQ-UCO/202604/8801', '2026-04-14', 'PT. CANADA GREEN GATE', 'Pasuruan – Indonesia', 'PIC', 'Pengurusan Izin Penambahan Barang Jadi Kategori DHE SDA', 'Bersama ini kami menyampaikan penawaran jasa pengurusan perizinan penambahan barang jadi kategori DHE SDA yang akan berhubungan dengan KPPBC Pusat serta Kementerian Perdagangan Republik Indonesia.', '• Pembayaran: 30% saat SPK, 70% setelah izin terbit\r\n• Dokumen disiapkan oleh pihak perusahaan\r\n• Biaya belum termasuk perubahan regulasi tambahan', 'Demikian proposal ini kami sampaikan. Kami berharap dapat menjalin kerja sama yang baik dengan perusahaan Bapak/Ibu.', 'IDR', 11.00, 2.00, 1, '2026-04-14 13:04:38', 'commercial_proposal', 'product', NULL, NULL, NULL, 1),
 	(3, 'INQ-UCO/202604/1831', '2026-04-25', 'UCO Exportindo Consulting', 'Email: sales@ucoexportindo.com\r\nIndonesia', '', 'OFFER SHEET USED COOKING OIL (UCO)', 'Product: Used Cooking Oil (UCO)', 'Net 30 Days before shipment by T/T\r\nAll banking charges are borne by the buyer.', 'NOTES\r\n-Final quantity subject to mutual agreement\r\n-Product availability subject to stock confirmation\r\n-SGS / inspection can be arranged upon request\r\n-Packaging and loading details will be confirmed before shipment\r\n-Prices are subject to market fluctuation and may change without prior notice\r\n\r\nWe look forward to establishing long-term business cooperation with your esteemed company.\r\n\r\nBest Regards,', 'USD', 11.00, 2.00, 2, '2026-04-25 13:35:05', 'commercial_proposal', 'product', '7 days from issued date', 'To be confirmed', 'Product supply, sourcing support, export/import consultation, documentation assistance, and coordination based on client requirements.', 0),
-	(5, 'INQ-UCO/202604/7225', '2026-04-29', 'PT. Canada Green Gate', 'Jl. Kraton Industri Raya No.03, Pejangkungan, Kec. Rembang, Pasuruan, Jawa Timur 67152\r\n', '-', 'Offer - processing of permits for the addition of finished goods in the form of caustic soda liquid', 'Thank you for your interest in our products and services. We are pleased to submit this offer for your review and consideration.', '-Price is subject to final permit scope, required documentation, and authority requirements confirmation.\r\n-Payment term will be agreed before project execution.\r\n-Government fees, official charges, tax, customs duties, and third-party administrative costs are excluded unless stated otherwise.\r\n', 'We hope this offer meets your requirements. Please feel free to contact us for further discussion or adjustment.', 'IDR', 11.00, 2.00, 2, '2026-04-29 11:35:31', 'service_offer', 'service', '7 days from issued date', 'To be confirmed', 'Processing of permits for the addition of finished goods in the form of liquid caustic soda, including regulatory consultation, documentation preparation, submission support, coordination with related authorities, and administrative assistance based on client requirements.\r\n', 1);
+	(5, 'INQ-UCO/202604/7225', '2026-04-29', 'PT. Canada Green Gate', 'Jl. Kraton Industri Raya No.03, Pejangkungan, Kec. Rembang, Pasuruan, Jawa Timur 67152\r\n', '-', 'Offer - processing of permits for the addition of finished goods in the form of caustic soda liquid', 'Thank you for your interest in our products and services. We are pleased to submit this offer for your review and consideration.', '-Price is subject to final permit scope, required documentation, and authority requirements confirmation.\r\n-Payment term will be agreed before project execution.\r\n-Government fees, official charges, tax, customs duties, and third-party administrative costs are excluded unless stated otherwise.\r\n', 'We hope this offer meets your requirements. Please feel free to contact us for further discussion or adjustment.', 'IDR', 11.00, 2.00, 2, '2026-04-29 11:35:31', 'quotation', 'service', '7 days from issued date', 'To be confirmed', 'Processing of permits for the addition of finished goods in the form of liquid caustic soda, including regulatory consultation, documentation preparation, submission support, coordination with related authorities, and administrative assistance based on client requirements.\r\n', 1);
 
 -- Dumping structure for table uco_v4.manual_inquiry_items
 CREATE TABLE IF NOT EXISTS `manual_inquiry_items` (
@@ -229,15 +247,15 @@ CREATE TABLE IF NOT EXISTS `manual_inquiry_items` (
   PRIMARY KEY (`id`),
   KEY `manual_inquiry_id` (`manual_inquiry_id`),
   CONSTRAINT `fk_manual_inquiry_items_header` FOREIGN KEY (`manual_inquiry_id`) REFERENCES `manual_inquiries` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Dumping data for table uco_v4.manual_inquiry_items: ~5 rows (approximately)
 INSERT INTO `manual_inquiry_items` (`id`, `manual_inquiry_id`, `description`, `agency`, `duration_text`, `amount`) VALUES
 	(1, 1, 'Registrasi & Izin Penambahan Barang Jadi (Calcium Soap & Shortening)', 'KPPBC Pusat & Kemendag', '±5 Hari Kerja', 32000000.00),
-	(16, 5, 'Services - processing permits for the addition of\r\nfinished goods caustic soda liquid\r\n', '-', 'To be confirmed', 32000000.00),
 	(17, 3, 'FFA: 2–5% | MI: ≤ 2%', '', 'KG', 1.40),
 	(18, 3, 'FFA: 5–10% | MI: ≤ 2%', '', 'KG', 1.15),
-	(19, 3, 'FFA: 10–15% | MI: ≤ 2%', '', 'KG', 1.05);
+	(19, 3, 'FFA: 10–15% | MI: ≤ 2%', '', 'KG', 1.05),
+	(20, 5, 'Services - processing permits for the addition of\r\nfinished goods caustic soda liquid\r\n', '-', 'To be confirmed', 32000000.00);
 
 -- Dumping structure for table uco_v4.manual_invoices
 CREATE TABLE IF NOT EXISTS `manual_invoices` (
@@ -272,7 +290,7 @@ CREATE TABLE IF NOT EXISTS `manual_invoices` (
   KEY `payment_term_id` (`payment_term_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table uco_v4.manual_invoices: ~2 rows (approximately)
+-- Dumping data for table uco_v4.manual_invoices: ~1 rows (approximately)
 INSERT INTO `manual_invoices` (`id`, `invoice_no`, `invoice_date`, `customer_name`, `customer_address`, `customer_country`, `pic_name`, `currency_id`, `payment_term_text`, `incoterm_text`, `incoterm_id`, `payment_term_id`, `subject`, `notes`, `total_amount`, `subtotal_amount`, `total_discount_amount`, `total_tax_amount`, `paid_amount`, `balance_amount`, `created_by`, `created_at`, `ppn_percent`, `pph_percent`) VALUES
 	(7, 'INV-UCO/202604/0082', '2026-04-15', 'PT. CANADA GREEN GATE', 'Jl. Kraton Industri Raya No.03,  Pejangkungan,Kec. Rembang, Pasuruan, Jawa Timur 67152\r\n', 'Pasuruan – Indonesia', '', 2, '30% saat SPK, 70% setelah izin terbit', '-', NULL, NULL, 'Invoice', '-', 32640000.00, 32000000.00, 0.00, 640000.00, 9600000.00, 23040000.00, 2, '2026-04-15 14:44:57', 11.00, 2.00);
 
@@ -521,9 +539,9 @@ CREATE TABLE IF NOT EXISTS `users` (
 
 -- Dumping data for table uco_v4.users: ~3 rows (approximately)
 INSERT INTO `users` (`id`, `nama`, `username`, `password`, `role`, `is_active`, `created_at`) VALUES
-	(2, 'doni', 'doni', '$2y$10$xFf6ogs.jel.1GcDDw.P2eJIP9g5FjP9jF7QFIs.hTfTgR.3KUTnq', 'admin', 1, '2026-03-09 06:05:57'),
-	(3, 'rizky', 'rizky', '$2y$10$19RWWu/QMOmeibRsOj9l6O4jrszaY8PKfutrK4kYv35werPChGn.6', 'admin', 1, '2026-03-09 06:06:05'),
-	(4, 'dika', 'dika', '$2y$10$6IiuhiHHaqKY5S8mKu/dWekMn10sqtHdfizkZRYdAwy1vkGaCDP8W', 'admin', 1, '2026-03-09 06:06:09');
+	(2, 'Doni W', 'doni', '$2y$10$xFf6ogs.jel.1GcDDw.P2eJIP9g5FjP9jF7QFIs.hTfTgR.3KUTnq', 'admin', 1, '2026-03-09 06:05:57'),
+	(3, 'Rizky Dwi S', 'rizky', '$2y$10$19RWWu/QMOmeibRsOj9l6O4jrszaY8PKfutrK4kYv35werPChGn.6', 'admin', 1, '2026-03-09 06:06:05'),
+	(4, 'Dika Tri M', 'dika', '$2y$10$6IiuhiHHaqKY5S8mKu/dWekMn10sqtHdfizkZRYdAwy1vkGaCDP8W', 'admin', 1, '2026-03-09 06:06:09');
 
 -- Dumping structure for table uco_v4.warehouses
 CREATE TABLE IF NOT EXISTS `warehouses` (
@@ -537,8 +555,7 @@ CREATE TABLE IF NOT EXISTS `warehouses` (
 
 -- Dumping data for table uco_v4.warehouses: ~3 rows (approximately)
 INSERT INTO `warehouses` (`id`, `code`, `warehouse_name`, `location`, `is_active`) VALUES
-	(1, 'WH-01', 'Main Warehouse', 'Location 1, East Java', 1),
-	(7, 'WH-07', 'Finished Goods A', 'Location 7, East Java', 1);
+	(1, 'WH-01', 'Main Warehouse', 'Location 1, East Java', 1);
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

@@ -7,6 +7,7 @@ class Welcome extends MY_Controller
     {
         parent::__construct();
         $this->load->model('Crud_model', 'crud');
+        $this->load->model('Inquiry_message_model', 'inq_msg');
     }
 
     public function index()
@@ -32,5 +33,41 @@ class Welcome extends MY_Controller
     {
         $data['title'] = 'Contact - Uco Exportindo Consulting';
         $this->render('public/contact', $data, 'public');
+    }
+
+    public function send_inquiry()
+    {
+        if ($this->input->method() !== 'post') {
+            redirect('contact');
+        }
+
+        $full_name = trim((string)$this->input->post('full_name', true));
+        $email     = trim((string)$this->input->post('email', true));
+        $phone     = trim((string)$this->input->post('phone', true));
+        $subject   = trim((string)$this->input->post('subject', true));
+        $message   = trim((string)$this->input->post('message', true));
+
+        if ($full_name === '' || $email === '' || $subject === '' || $message === '') {
+            $this->session->set_flashdata('error', 'Please complete name, email, subject, and message.');
+            redirect('contact#inquiry-form');
+        }
+
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $this->session->set_flashdata('error', 'Please enter a valid email address.');
+            redirect('contact#inquiry-form');
+        }
+
+        $this->db->insert('inquiry_messages', [
+            'full_name'  => $full_name,
+            'email'      => $email,
+            'phone'      => $phone,
+            'subject'    => $subject,
+            'message'    => $message,
+            'status'     => 'new',
+            'created_at' => date('Y-m-d H:i:s'),
+        ]);
+
+        $this->session->set_flashdata('success', 'Thank you. Your inquiry has been submitted successfully. Our team will contact you shortly.');
+        redirect('contact#inquiry-form');
     }
 }

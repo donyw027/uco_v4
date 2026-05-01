@@ -73,6 +73,7 @@ $master_menu_open = $nav_active([
   'masters/incoterms',
   'masters/payment_terms',
   'masters/warehouses',
+  'masters/users',
   'settings/company'
 ]) ? true : false;
 ?>
@@ -160,101 +161,6 @@ $master_menu_open = $nav_active([
     .sidebar .bi-chevron-down {
       margin-left: auto;
       flex: 0 0 auto;
-    }
-
-
-    .admin-topnav {
-      min-height: 66px;
-      background: rgba(255, 255, 255, .96);
-      border-bottom: 1px solid rgba(15, 23, 42, .08);
-      box-shadow: 0 10px 28px rgba(15, 23, 42, .045);
-      position: sticky;
-      top: 0;
-      z-index: 20;
-      backdrop-filter: blur(10px);
-    }
-
-    .admin-topnav .navbar-brand-text {
-      font-size: .82rem;
-      font-weight: 800;
-      color: #0f172a;
-      letter-spacing: -.01em;
-    }
-
-    .admin-topnav .navbar-subtext {
-      font-size: .72rem;
-      color: #64748b;
-      line-height: 1.2;
-    }
-
-    .topnav-action {
-      display: inline-flex;
-      align-items: center;
-      gap: .45rem;
-      min-height: 38px;
-      padding: .45rem .75rem;
-      border-radius: 999px;
-      color: #475569;
-      text-decoration: none;
-      font-size: .84rem;
-      font-weight: 800;
-      border: 1px solid transparent;
-      transition: .18s ease;
-      white-space: nowrap;
-    }
-
-    .topnav-action:hover,
-    .topnav-action.active {
-      color: #0f172a;
-      background: #f1f5f9;
-      border-color: #e2e8f0;
-    }
-
-    .topnav-action.danger:hover {
-      color: #b91c1c;
-      background: #fef2f2;
-      border-color: #fecaca;
-    }
-
-    .topnav-user {
-      padding-left: .85rem;
-      margin-left: .35rem;
-      border-left: 1px solid #e2e8f0;
-      color: #334155;
-      font-size: .84rem;
-      font-weight: 800;
-    }
-
-    .topnav-avatar {
-      width: 34px;
-      height: 34px;
-      border-radius: 999px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, #e0f2fe, #dbeafe);
-      color: #0f172a;
-      font-weight: 900;
-      border: 1px solid rgba(15, 23, 42, .08);
-    }
-
-    @media (max-width: 767.98px) {
-      .admin-topnav {
-        position: relative;
-      }
-
-      .admin-topnav .navbar-subtext {
-        display: none;
-      }
-
-      .topnav-action span,
-      .topnav-user .user-name {
-        display: none;
-      }
-
-      .topnav-action {
-        padding: .45rem .6rem;
-      }
     }
 
 
@@ -444,6 +350,50 @@ $master_menu_open = $nav_active([
 </head>
 
 <body>
+  <!-- TOP NAVBAR -->
+  <nav class="navbar navbar-expand navbar-light bg-white shadow-sm px-4" style="height:60px;">
+
+    <!-- LEFT (optional title / breadcrumb) -->
+    <div class="d-flex align-items-center">
+      <span class="fw-semibold text-dark">
+        <?= $page_title ?? 'Dashboard'; ?>
+      </span>
+    </div>
+
+    <!-- RIGHT -->
+    <ul class="navbar-nav ms-auto align-items-center">
+
+      <!-- NOTIFICATION DOT (optional) -->
+      <li class="nav-item me-3">
+        <span class="position-relative d-inline-block">
+          <i class="bi bi-bell fs-5"></i>
+          <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
+        </span>
+      </li>
+
+      <!-- USER DROPDOWN -->
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" role="button" data-bs-toggle="dropdown">
+          <img src="<?= base_url('assets/img/avatar.png'); ?>" width="32" height="32" class="rounded-circle">
+          <span><?= $this->session->userdata('name'); ?></span>
+        </a>
+
+        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+          <li>
+            <a class="dropdown-item" href="<?= site_url('change_password'); ?>">
+              <i class="bi bi-key me-2"></i> Change Password
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="<?= site_url('logout'); ?>">
+              <i class="bi bi-box-arrow-right me-2"></i> Logout
+            </a>
+          </li>
+        </ul>
+      </li>
+
+    </ul>
+  </nav>
   <div class="d-flex admin-shell">
     <aside class="sidebar text-white p-3 p-lg-4">
       <a href="<?= site_url('dashboard'); ?>" class="sidebar-brand mb-3 text-decoration-none">
@@ -457,10 +407,10 @@ $master_menu_open = $nav_active([
       </div> -->
 
       <nav class="nav flex-column gap-1">
-        <!-- <a class="nav-link <?= $nav_active(['dashboard']); ?>" href="<?= site_url('dashboard'); ?>">
+        <a class="nav-link <?= $nav_active(['dashboard']); ?>" href="<?= site_url('dashboard'); ?>">
           <i class="bi bi-grid-1x2-fill"></i>
           <span>Dashboard</span>
-        </a> -->
+        </a>
 
         <div class="nav-section-title">Master Data</div>
 
@@ -477,7 +427,7 @@ $master_menu_open = $nav_active([
           data-bs-toggle="collapse"
           href="#masterMenu"
           role="button"
-          aria-expanded="<?= $master_menu_open ? 'true' : 'false'; ?>"
+          aria-expanded="false"
           aria-controls="masterMenu">
           <span><i class="bi bi-database"></i> Master Data</span>
           <i class="bi bi-chevron-down"></i>
@@ -578,48 +528,29 @@ $master_menu_open = $nav_active([
           <span>Stock Movements</span>
         </a>
 
+        <div class="nav-section-title">Customer Communication</div>
+
+        <a class="nav-link <?= $nav_active(['contact_messages']); ?>" href="<?= site_url('contact_messages'); ?>">
+          <i class="bi bi-envelope-paper"></i>
+          <span>Website Inquiries</span>
+        </a>
+
+        <div class="nav-section-title">System</div>
+
+        <a class="nav-link <?= $nav_active(['masters/users']); ?>" href="<?= site_url('masters/users'); ?>">
+          <i class="bi bi-person-badge"></i>
+          <span>User Management</span>
+        </a>
+
+        <a class="nav-link" href="<?= site_url('logout'); ?>">
+          <i class="bi bi-box-arrow-right"></i>
+          <span>Logout</span>
+        </a>
       </nav>
     </aside>
 
     <main class="flex-grow-1 main-area">
-      <nav class="admin-topnav d-flex align-items-center justify-content-between px-3 px-lg-4">
-        <div class="min-width-0">
-
-          <div class="navbar-brand-text"><?= e($page_title); ?></div>
-          <div class="navbar-subtext">
-            <!-- <span class="user-name">Welcome Back ,<?= e(isset($u['nama']) ? $u['nama'] : 'Admin'); ?></span> -->
-            <!-- <span class="topnav-avatar"><?= strtoupper(substr((string)(isset($u['nama']) ? $u['nama'] : 'A'), 0, 1)); ?></span> -->
-          </div>
-        </div>
-
-        <div class="d-flex align-items-center gap-1 gap-lg-2 ms-auto">
-          <a class="topnav-action <?= $nav_active(['contact_messages']); ?>" href="<?= site_url('contact_messages'); ?>">
-            <i class="bi bi-envelope-paper"></i>
-            <span>Website Inquiries</span>
-          </a>
-
-          <a class="topnav-action <?= $nav_active(['masters/users']); ?>" href="<?= site_url('masters/users'); ?>">
-            <i class="bi bi-person-badge"></i>
-            <span>User Management</span>
-          </a>
-
-          <a class="topnav-action danger" href="<?= site_url('logout'); ?>">
-            <i class="bi bi-box-arrow-right"></i>
-            <span>Logout</span>
-          </a>
-
-          <div class="topnav-user d-flex align-items-center gap-2">
-            <span class="user-name"><?= e(isset($u['nama']) ? $u['nama'] : 'Admin'); ?></span>
-            <span class="topnav-avatar"><?= strtoupper(substr((string)(isset($u['nama']) ? $u['nama'] : 'A'), 0, 1)); ?></span>
-          </div>
-
-
-        </div>
-      </nav>
-
-      <br><br>
-
-      <!-- <div class="topbar-panel d-flex flex-wrap justify-content-between align-items-center gap-3">
+      <div class="topbar-panel d-flex flex-wrap justify-content-between align-items-center gap-3">
         <div>
           <h1 class="h4"><?= e($page_title); ?></h1>
           <div class="subtext">UCO Exportindo admin workspace for export operations, documents, and stock monitoring.</div>
@@ -630,7 +561,7 @@ $master_menu_open = $nav_active([
           </div>
           <div class="subtext">Today: <?= date('d M Y'); ?></div>
         </div>
-      </div> -->
+      </div>
 
       <?php if ($this->session->flashdata('success')): ?>
         <div class="alert alert-success"><?= e($this->session->flashdata('success')); ?></div>
