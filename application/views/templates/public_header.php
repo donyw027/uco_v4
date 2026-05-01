@@ -1,15 +1,106 @@
+<?php
+$publicCompany = isset($company) && is_array($company) ? $company : [];
+$publicCompanyName = $publicCompany['company_name'] ?? 'UCO Exportindo Consulting';
+$publicEmail = trim((string)($publicCompany['email'] ?? 'sales@ucoexportindo.com'));
+$publicPhone = trim((string)($publicCompany['phone'] ?? ''));
+$publicAddress = trim((string)($publicCompany['address'] ?? 'Indonesia'));
+?>
 <!doctype html>
 <html lang="en">
 
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title><?= e($title ?? 'UCO Exportindo Consulting'); ?></title>
+  <title><?= e($title ?? $publicCompanyName); ?></title>
   <link rel="icon" href="<?= base_url('assets/img/favicon.png'); ?>">
+
   <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <style>
+    @media (max-width: 768px) {
+      .topbar-uco {
+        padding: 7px 0;
+        overflow: hidden;
+      }
+
+      .topbar-uco .container {
+        display: block !important;
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+
+      .topbar-uco .small-text {
+        display: flex !important;
+        flex-direction: row !important;
+        gap: 8px !important;
+        overflow-x: auto;
+        white-space: nowrap;
+        scrollbar-width: none;
+        padding-bottom: 2px;
+      }
+
+      .topbar-uco .small-text::-webkit-scrollbar {
+        display: none;
+      }
+
+      .top-item {
+        flex: 0 0 auto;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, .08);
+        border: 1px solid rgba(255, 255, 255, .10);
+        font-size: 12px;
+      }
+
+      .top-item i {
+        font-size: 11px;
+      }
+    }
+
+    .topbar-uco {
+      background: linear-gradient(90deg, #0f1f3d, #162a52);
+      color: #e2e8f0;
+      font-size: 13px;
+      padding: 8px 0;
+    }
+
+    .topbar-uco a {
+      color: #e2e8f0;
+      text-decoration: none;
+    }
+
+    .topbar-uco a:hover {
+      color: #fff;
+    }
+
+    .top-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      opacity: 0.9;
+    }
+
+    .top-item i {
+      font-size: 12px;
+      opacity: 0.8;
+    }
+
+    /* MOBILE FIX */
+    @media (max-width: 768px) {
+      .topbar-uco .container {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+      }
+
+      .topbar-uco .small-text {
+        flex-direction: column;
+        gap: 4px;
+      }
+    }
+
+
     :root {
       --pub-navy: #081121;
       --pub-blue: #0f3d91;
@@ -290,15 +381,39 @@
 <body>
   <div id="preloader"><img src="<?= base_url('assets/img/uco.png'); ?>" class="loader-logo" alt="UCO"></div>
   <div class="topbar py-2">
-    <div class="container d-flex flex-wrap justify-content-between gap-2">
-      <div><i class="fa-solid fa-envelope me-2"></i><a href="mailto:sales@ucoexportindo.com">sales@ucoexportindo.com</a></div>
-      <div><i class="fa-solid fa-globe me-2"></i>Reliable partner for used cooking oil export </div>
+    <div class="topbar-uco">
+      <div class="container d-flex flex-wrap justify-content-between align-items-center">
+
+        <div class="d-flex flex-wrap gap-4 small-text">
+
+          <div class="top-item">
+            <i class="fa-solid fa-envelope"></i>
+            <a href="mailto:<?= e($publicEmail); ?>">
+              <?= e($publicEmail); ?>
+            </a>
+          </div>
+
+          <div class="top-item">
+            <i class="fa-solid fa-envelope"></i>
+            <a href="mailto:ucoexporindo@gmail.com">
+              ucoexporindo@gmail.com
+            </a>
+          </div>
+
+          <div class="top-item">
+            <i class="fa-solid fa-globe"></i>
+            <span>Reliable partner for used cooking oil export</span>
+          </div>
+
+        </div>
+
+      </div>
     </div>
   </div>
   <header class="site-header">
     <nav class="navbar navbar-expand-lg py-3">
       <div class="container">
-        <a href="<?= site_url(); ?>" class="navbar-brand">UCO <span>Exportindo Consulting</span></a>
+        <a href="<?= site_url(); ?>" class="navbar-brand"><?= e($publicCompanyName); ?></a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"><span class="navbar-toggler-icon"></span></button>
         <div class="collapse navbar-collapse" id="mainNav">
           <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
@@ -306,7 +421,7 @@
             <li class="nav-item"><a class="nav-link" href="<?= site_url('about'); ?>">About</a></li>
             <li class="nav-item"><a class="nav-link" href="<?= site_url('products'); ?>">Products</a></li>
             <li class="nav-item"><a class="nav-link" href="<?= site_url('contact'); ?>">Contact</a></li>
-            <li class="nav-item ms-lg-2"><a href="mailto:sales@UCO Exportindo Consulting.com" class="btn btn-quote">Send Inquiry</a></li>
+            <li class="nav-item ms-lg-2"><a href="<?= site_url('contact#inquiry-form'); ?>" class="btn btn-quote">Send Inquiry</a></li>
           </ul>
         </div>
       </div>

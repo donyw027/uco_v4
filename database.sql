@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS `company_profile` (
 
 -- Dumping data for table uco_v4.company_profile: ~1 rows (approximately)
 INSERT INTO `company_profile` (`id`, `company_name`, `address`, `phone`, `email`, `bank_info`, `signature_name`, `signature_title`) VALUES
-	(10, 'Uco Exportindo Constulting', 'Perum Majapahit, Pungging – Mojokerto', '+62-896-7257-4222', 'ucoexporindo@gmail.com', 'Mandiri - 1420026750074\r\nAccount Name : Uco Exportindo Constulting', 'Doni Wicaksono', 'Director Of Marketing');
+	(10, 'Uco Exportindo Consulting', 'Perum Majapahit, Pungging – Mojokerto, Indonesia', '+62-851-5747-7515', 'marketing@ucoexportindo.com', 'Mandiri - 1420026750074\r\nAccount Name : Uco Exportindo Constulting', 'Doni Wicaksono', 'Head Of Marketing');
 
 -- Dumping structure for table uco_v4.currencies
 CREATE TABLE IF NOT EXISTS `currencies` (
@@ -80,7 +80,7 @@ CREATE TABLE IF NOT EXISTS `document_sequences` (
   `last_number` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uniq_doc_seq` (`doc_type`,`yyyymm`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Dumping data for table uco_v4.document_sequences: ~13 rows (approximately)
 INSERT INTO `document_sequences` (`id`, `doc_type`, `yyyymm`, `last_number`) VALUES
@@ -96,7 +96,8 @@ INSERT INTO `document_sequences` (`id`, `doc_type`, `yyyymm`, `last_number`) VAL
 	(10, 'SJ', '202603', 10),
 	(11, 'PL', '202604', 5),
 	(12, 'SO', '202604', 3),
-	(13, 'INV', '202604', 89);
+	(13, 'INV', '202604', 89),
+	(14, 'INV', '202605', 2);
 
 -- Dumping structure for table uco_v4.fee_slips
 CREATE TABLE IF NOT EXISTS `fee_slips` (
@@ -124,7 +125,7 @@ CREATE TABLE IF NOT EXISTS `fee_slips` (
 
 -- Dumping data for table uco_v4.fee_slips: ~0 rows (approximately)
 INSERT INTO `fee_slips` (`id`, `slip_no`, `slip_date`, `period_text`, `payee_name`, `position_text`, `bank_account`, `payment_term`, `currency_text`, `description`, `notes`, `gross_fee`, `capital_contribution`, `deduction_amount`, `tax_amount`, `take_home_pay`, `created_by`, `created_at`) VALUES
-	(1, '31231', '2026-04-28', 'April 2026', '312', '123', '321', 'Monthly Fee Distribution', 'IDR', 'Fee distribution for consulting service related to:', 'Deduction is allocated as initial capital contribution based on mutual agreement.', 123132.00, 1231.00, 123.00, 12.00, 121766.00, 2, '2026-04-28 12:17:52');
+	(1, 'SLIP-UCO/202605/001', '2026-04-28', 'April 2026', 'Mr Test', 'Manager', '123456', 'Monthly Fee Distribution', 'IDR', 'Fee distribution for consulting service related to:', 'Deduction is allocated as initial capital contribution based on mutual agreement.', 10000000.00, 1000000.00, 500000.00, 2.00, 8499998.00, 2, '2026-04-28 12:17:52');
 
 -- Dumping structure for table uco_v4.incoterms
 CREATE TABLE IF NOT EXISTS `incoterms` (
@@ -226,15 +227,16 @@ CREATE TABLE IF NOT EXISTS `manual_inquiries` (
   `lead_time` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `scope_of_work` text COLLATE utf8mb4_general_ci,
   `show_summary` tinyint(1) NOT NULL DEFAULT '1',
+  `signature_user_id` int DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `proposal_no` (`proposal_no`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Dumping data for table uco_v4.manual_inquiries: ~3 rows (approximately)
-INSERT INTO `manual_inquiries` (`id`, `proposal_no`, `proposal_date`, `recipient_company`, `recipient_address`, `recipient_pic`, `subject`, `opening_text`, `terms_text`, `closing_text`, `currency_text`, `ppn_percent`, `pph_percent`, `created_by`, `created_at`, `document_type`, `offer_type`, `validity_offer`, `lead_time`, `scope_of_work`, `show_summary`) VALUES
-	(1, 'INQ-UCO/202604/8801', '2026-04-14', 'PT. CANADA GREEN GATE', 'Pasuruan – Indonesia', 'PIC', 'Pengurusan Izin Penambahan Barang Jadi Kategori DHE SDA', 'Bersama ini kami menyampaikan penawaran jasa pengurusan perizinan penambahan barang jadi kategori DHE SDA yang akan berhubungan dengan KPPBC Pusat serta Kementerian Perdagangan Republik Indonesia.', '• Pembayaran: 30% saat SPK, 70% setelah izin terbit\r\n• Dokumen disiapkan oleh pihak perusahaan\r\n• Biaya belum termasuk perubahan regulasi tambahan', 'Demikian proposal ini kami sampaikan. Kami berharap dapat menjalin kerja sama yang baik dengan perusahaan Bapak/Ibu.', 'IDR', 11.00, 2.00, 1, '2026-04-14 13:04:38', 'commercial_proposal', 'product', NULL, NULL, NULL, 1),
-	(3, 'INQ-UCO/202604/1831', '2026-04-25', 'UCO Exportindo Consulting', 'Email: sales@ucoexportindo.com\r\nIndonesia', '', 'OFFER SHEET USED COOKING OIL (UCO)', 'Product: Used Cooking Oil (UCO)', 'Net 30 Days before shipment by T/T\r\nAll banking charges are borne by the buyer.', 'NOTES\r\n-Final quantity subject to mutual agreement\r\n-Product availability subject to stock confirmation\r\n-SGS / inspection can be arranged upon request\r\n-Packaging and loading details will be confirmed before shipment\r\n-Prices are subject to market fluctuation and may change without prior notice\r\n\r\nWe look forward to establishing long-term business cooperation with your esteemed company.\r\n\r\nBest Regards,', 'USD', 11.00, 2.00, 2, '2026-04-25 13:35:05', 'commercial_proposal', 'product', '7 days from issued date', 'To be confirmed', 'Product supply, sourcing support, export/import consultation, documentation assistance, and coordination based on client requirements.', 0),
-	(5, 'INQ-UCO/202604/7225', '2026-04-29', 'PT. Canada Green Gate', 'Jl. Kraton Industri Raya No.03, Pejangkungan, Kec. Rembang, Pasuruan, Jawa Timur 67152\r\n', '-', 'Offer - processing of permits for the addition of finished goods in the form of caustic soda liquid', 'Thank you for your interest in our products and services. We are pleased to submit this offer for your review and consideration.', '-Price is subject to final permit scope, required documentation, and authority requirements confirmation.\r\n-Payment term will be agreed before project execution.\r\n-Government fees, official charges, tax, customs duties, and third-party administrative costs are excluded unless stated otherwise.\r\n', 'We hope this offer meets your requirements. Please feel free to contact us for further discussion or adjustment.', 'IDR', 11.00, 2.00, 2, '2026-04-29 11:35:31', 'quotation', 'service', '7 days from issued date', 'To be confirmed', 'Processing of permits for the addition of finished goods in the form of liquid caustic soda, including regulatory consultation, documentation preparation, submission support, coordination with related authorities, and administrative assistance based on client requirements.\r\n', 1);
+INSERT INTO `manual_inquiries` (`id`, `proposal_no`, `proposal_date`, `recipient_company`, `recipient_address`, `recipient_pic`, `subject`, `opening_text`, `terms_text`, `closing_text`, `currency_text`, `ppn_percent`, `pph_percent`, `created_by`, `created_at`, `document_type`, `offer_type`, `validity_offer`, `lead_time`, `scope_of_work`, `show_summary`, `signature_user_id`) VALUES
+	(1, 'INQ-UCO/202604/8801', '2026-04-14', 'PT. CANADA GREEN GATE', 'Pasuruan – Indonesia', 'PIC', 'Pengurusan Izin Penambahan Barang Jadi Kategori DHE SDA', 'Bersama ini kami menyampaikan penawaran jasa pengurusan perizinan penambahan barang jadi kategori DHE SDA yang akan berhubungan dengan KPPBC Pusat serta Kementerian Perdagangan Republik Indonesia.', '• Pembayaran: 30% saat SPK, 70% setelah izin terbit\r\n• Dokumen disiapkan oleh pihak perusahaan\r\n• Biaya belum termasuk perubahan regulasi tambahan', 'Demikian proposal ini kami sampaikan. Kami berharap dapat menjalin kerja sama yang baik dengan perusahaan Bapak/Ibu.', 'IDR', 11.00, 2.00, 1, '2026-04-14 13:04:38', 'commercial_proposal', 'product', NULL, NULL, NULL, 1, NULL),
+	(3, 'INQ-UCO/202604/1831', '2026-04-25', 'UCO Exportindo Consulting', 'Email: sales@ucoexportindo.com\r\nIndonesia', '', 'OFFER SHEET USED COOKING OIL (UCO)', 'Product: Used Cooking Oil (UCO)', 'Net 30 Days before shipment by T/T\r\nAll banking charges are borne by the buyer.', 'NOTES\r\n-Final quantity subject to mutual agreement\r\n-Product availability subject to stock confirmation\r\n-SGS / inspection can be arranged upon request\r\n-Packaging and loading details will be confirmed before shipment\r\n-Prices are subject to market fluctuation and may change without prior notice\r\n\r\nWe look forward to establishing long-term business cooperation with your esteemed company.\r\n\r\nBest Regards,', 'USD', 11.00, 2.00, 2, '2026-04-25 13:35:05', 'commercial_proposal', 'product', '7 days from issued date', 'To be confirmed', 'Product supply, sourcing support, export/import consultation, documentation assistance, and coordination based on client requirements.', 0, NULL),
+	(5, 'INQ-UCO/202604/7225', '2026-04-29', 'PT. Canada Green Gate', 'Jl. Kraton Industri Raya No.03, Pejangkungan, Kec. Rembang, Pasuruan, Jawa Timur 67152\r\n', '-', 'Offer - processing of permits for the addition of finished goods in the form of caustic soda liquid', 'Thank you for your interest in our products and services. We are pleased to submit this offer for your review and consideration.', '-Price is subject to final permit scope, required documentation, and authority requirements confirmation.\r\n-Payment term will be agreed before project execution.\r\n-Government fees, official charges, tax, customs duties, and third-party administrative costs are excluded unless stated otherwise.\r\n', 'We hope this offer meets your requirements. Please feel free to contact us for further discussion or adjustment.', 'IDR', 11.00, 2.00, 2, '2026-04-29 11:35:31', 'quotation', 'service', '7 days from issued date', 'To be confirmed', 'Processing of permits for the addition of finished goods in the form of liquid caustic soda, including regulatory consultation, documentation preparation, submission support, coordination with related authorities, and administrative assistance based on client requirements.\r\n', 1, NULL);
 
 -- Dumping structure for table uco_v4.manual_inquiry_items
 CREATE TABLE IF NOT EXISTS `manual_inquiry_items` (
@@ -247,7 +249,7 @@ CREATE TABLE IF NOT EXISTS `manual_inquiry_items` (
   PRIMARY KEY (`id`),
   KEY `manual_inquiry_id` (`manual_inquiry_id`),
   CONSTRAINT `fk_manual_inquiry_items_header` FOREIGN KEY (`manual_inquiry_id`) REFERENCES `manual_inquiries` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Dumping data for table uco_v4.manual_inquiry_items: ~5 rows (approximately)
 INSERT INTO `manual_inquiry_items` (`id`, `manual_inquiry_id`, `description`, `agency`, `duration_text`, `amount`) VALUES
@@ -283,16 +285,17 @@ CREATE TABLE IF NOT EXISTS `manual_invoices` (
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `ppn_percent` decimal(5,2) NOT NULL DEFAULT '11.00',
   `pph_percent` decimal(5,2) NOT NULL DEFAULT '2.00',
+  `signature_user_id` int DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `invoice_no` (`invoice_no`),
   KEY `currency_id` (`currency_id`),
   KEY `incoterm_id` (`incoterm_id`),
   KEY `payment_term_id` (`payment_term_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Dumping data for table uco_v4.manual_invoices: ~1 rows (approximately)
-INSERT INTO `manual_invoices` (`id`, `invoice_no`, `invoice_date`, `customer_name`, `customer_address`, `customer_country`, `pic_name`, `currency_id`, `payment_term_text`, `incoterm_text`, `incoterm_id`, `payment_term_id`, `subject`, `notes`, `total_amount`, `subtotal_amount`, `total_discount_amount`, `total_tax_amount`, `paid_amount`, `balance_amount`, `created_by`, `created_at`, `ppn_percent`, `pph_percent`) VALUES
-	(7, 'INV-UCO/202604/0082', '2026-04-15', 'PT. CANADA GREEN GATE', 'Jl. Kraton Industri Raya No.03,  Pejangkungan,Kec. Rembang, Pasuruan, Jawa Timur 67152\r\n', 'Pasuruan – Indonesia', '', 2, '30% saat SPK, 70% setelah izin terbit', '-', NULL, NULL, 'Invoice', '-', 32640000.00, 32000000.00, 0.00, 640000.00, 9600000.00, 23040000.00, 2, '2026-04-15 14:44:57', 11.00, 2.00);
+INSERT INTO `manual_invoices` (`id`, `invoice_no`, `invoice_date`, `customer_name`, `customer_address`, `customer_country`, `pic_name`, `currency_id`, `payment_term_text`, `incoterm_text`, `incoterm_id`, `payment_term_id`, `subject`, `notes`, `total_amount`, `subtotal_amount`, `total_discount_amount`, `total_tax_amount`, `paid_amount`, `balance_amount`, `created_by`, `created_at`, `ppn_percent`, `pph_percent`, `signature_user_id`) VALUES
+	(7, 'INV-UCO/202604/0082', '2026-04-15', 'PT. CANADA GREEN GATE', 'Jl. Kraton Industri Raya No.03,  Pejangkungan,Kec. Rembang, Pasuruan, Jawa Timur 67152\r\n', 'Pasuruan – Indonesia', '', 2, '30% saat SPK, 70% setelah izin terbit', '-', NULL, NULL, 'Invoice', '-', 32640000.00, 32000000.00, 0.00, 640000.00, 9600000.00, 23040000.00, 2, '2026-04-15 14:44:57', 11.00, 2.00, NULL);
 
 -- Dumping structure for table uco_v4.manual_invoice_items
 CREATE TABLE IF NOT EXISTS `manual_invoice_items` (
@@ -311,7 +314,7 @@ CREATE TABLE IF NOT EXISTS `manual_invoice_items` (
   PRIMARY KEY (`id`),
   KEY `manual_invoice_id` (`manual_invoice_id`),
   CONSTRAINT `fk_manual_invoice_items_header` FOREIGN KEY (`manual_invoice_id`) REFERENCES `manual_invoices` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Dumping data for table uco_v4.manual_invoice_items: ~1 rows (approximately)
 INSERT INTO `manual_invoice_items` (`id`, `manual_invoice_id`, `description`, `qty`, `unit`, `unit_price`, `discount_percent`, `tax_percent`, `subtotal`, `discount_amount`, `tax_amount`, `amount`) VALUES
@@ -387,6 +390,7 @@ CREATE TABLE IF NOT EXISTS `products` (
   `code` varchar(50) NOT NULL,
   `product_name` varchar(150) NOT NULL,
   `description` text,
+  `image` varchar(255) DEFAULT NULL,
   `uom_id` int DEFAULT NULL,
   `sales_price` decimal(18,2) NOT NULL DEFAULT '0.00',
   `nw_unit` decimal(18,4) NOT NULL DEFAULT '0.0000',
@@ -398,12 +402,13 @@ CREATE TABLE IF NOT EXISTS `products` (
   PRIMARY KEY (`id`),
   KEY `fk_products_uom` (`uom_id`),
   CONSTRAINT `fk_products_uom` FOREIGN KEY (`uom_id`) REFERENCES `uoms` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Dumping data for table uco_v4.products: ~2 rows (approximately)
-INSERT INTO `products` (`id`, `code`, `product_name`, `description`, `uom_id`, `sales_price`, `nw_unit`, `gw_unit`, `cbm_unit`, `package_unit`, `is_active`, `created_at`) VALUES
-	(1, 'PRD-001', 'Used Cooking Oil A', 'Used Cooking Oil A', 2, 12000.00, 180.0000, 190.0000, 1.1000, 1.0000, 1, '2026-03-09 06:02:47'),
-	(2, 'PRD-002', 'Used Cooking Oil B', 'Used Cooking Oil B ', 2, 11850.00, 175.0000, 185.0000, 1.0800, 1.0000, 1, '2026-03-09 06:02:47');
+INSERT INTO `products` (`id`, `code`, `product_name`, `description`, `image`, `uom_id`, `sales_price`, `nw_unit`, `gw_unit`, `cbm_unit`, `package_unit`, `is_active`, `created_at`) VALUES
+	(1, 'PRD-001', 'Used Cooking Oil A', 'Used Cooking Oil A', NULL, 2, 12000.00, 180.0000, 190.0000, 1.1000, 1.0000, 1, '2026-03-09 06:02:47'),
+	(2, 'PRD-002', 'Used Cooking Oil B', 'Used Cooking Oil B ', NULL, 2, 11850.00, 175.0000, 185.0000, 1.0800, 1.0000, 1, '2026-03-09 06:02:47'),
+	(14, 'PRD-003', 'Consulting', 'Consulting', NULL, 4, 0.00, 0.0000, 0.0000, 0.0000, 1.0000, 1, '2026-05-01 14:28:27');
 
 -- Dumping structure for table uco_v4.sales_orders
 CREATE TABLE IF NOT EXISTS `sales_orders` (
@@ -530,6 +535,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `nama` varchar(100) NOT NULL,
   `username` varchar(50) NOT NULL,
   `password` varchar(255) NOT NULL,
+  `position` varchar(150) DEFAULT NULL,
   `role` varchar(30) NOT NULL DEFAULT 'admin',
   `is_active` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
@@ -538,10 +544,10 @@ CREATE TABLE IF NOT EXISTS `users` (
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Dumping data for table uco_v4.users: ~3 rows (approximately)
-INSERT INTO `users` (`id`, `nama`, `username`, `password`, `role`, `is_active`, `created_at`) VALUES
-	(2, 'Doni W', 'doni', '$2y$10$xFf6ogs.jel.1GcDDw.P2eJIP9g5FjP9jF7QFIs.hTfTgR.3KUTnq', 'admin', 1, '2026-03-09 06:05:57'),
-	(3, 'Rizky Dwi S', 'rizky', '$2y$10$19RWWu/QMOmeibRsOj9l6O4jrszaY8PKfutrK4kYv35werPChGn.6', 'admin', 1, '2026-03-09 06:06:05'),
-	(4, 'Dika Tri M', 'dika', '$2y$10$6IiuhiHHaqKY5S8mKu/dWekMn10sqtHdfizkZRYdAwy1vkGaCDP8W', 'admin', 1, '2026-03-09 06:06:09');
+INSERT INTO `users` (`id`, `nama`, `username`, `password`, `position`, `role`, `is_active`, `created_at`) VALUES
+	(2, 'Doni W', 'doni', '$2y$10$xFf6ogs.jel.1GcDDw.P2eJIP9g5FjP9jF7QFIs.hTfTgR.3KUTnq', 'Head Of Marketing', 'admin', 1, '2026-03-09 06:05:57'),
+	(3, 'Rizky Dwi S', 'rizky', '$2y$10$19RWWu/QMOmeibRsOj9l6O4jrszaY8PKfutrK4kYv35werPChGn.6', 'Head Of Accounting', 'admin', 1, '2026-03-09 06:06:05'),
+	(4, 'Dika Tri M', 'dika', '$2y$10$6IiuhiHHaqKY5S8mKu/dWekMn10sqtHdfizkZRYdAwy1vkGaCDP8W', 'Director', 'admin', 1, '2026-03-09 06:06:09');
 
 -- Dumping structure for table uco_v4.warehouses
 CREATE TABLE IF NOT EXISTS `warehouses` (

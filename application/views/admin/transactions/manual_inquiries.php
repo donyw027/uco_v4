@@ -27,6 +27,8 @@ $offerTypeLabels = [
     'service'         => 'Service / Consulting',
     'product_service' => 'Product + Service',
 ];
+$signers = isset($signers) && is_array($signers) ? $signers : [];
+$currentSignerId = is_array($edit) ? (string)($edit['signature_user_id'] ?? '') : '';
 ?>
 <div class="section-block">
     <div class="section-head">
@@ -103,6 +105,17 @@ $offerTypeLabels = [
                     <div class="col-md-3">
                         <label class="form-label">Attention / PIC</label>
                         <input type="text" name="recipient_pic" class="form-control" value="<?= qf('recipient_pic'); ?>">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Document Signer</label>
+                        <select name="signature_user_id" class="form-select">
+                            <option value="">Use company default</option>
+                            <?php foreach ($signers as $sg): ?>
+                                <option value="<?= e($sg['id']); ?>" <?= ($currentSignerId === (string)$sg['id']) ? 'selected' : ''; ?>>
+                                    <?= e($sg['nama']); ?><?= !empty($sg['position']) ? ' - ' . e($sg['position']) : ''; ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
 
                     <div class="col-md-6">

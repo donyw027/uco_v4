@@ -1,3 +1,9 @@
+<?php
+$publicCompany = isset($company) && is_array($company) ? $company : [];
+$publicEmail = trim((string)($publicCompany['email'] ?? '<?= e($publicEmail); ?>'));
+$publicPhone = trim((string)($publicCompany['phone'] ?? ''));
+$publicAddress = trim((string)($publicCompany['address'] ?? 'Indonesia'));
+?>
 <?php if ($this->session->flashdata('success')): ?>
     <div class="alert alert-success rounded-4">
         <?= $this->session->flashdata('success'); ?>
@@ -32,17 +38,18 @@
                     <div class="d-grid gap-3">
                         <div class="contact-tile soft-card p-3">
                             <strong><i class="fa-solid fa-envelope me-2 text-primary"></i>Email</strong>
-                            <div class="small-muted mt-1">sales@ucoexportindo.com</div>
+                            <div class="small-muted mt-1"><?= e($publicEmail); ?></div>
+                            <div class="small-muted mt-1">ucoexporindo@gmail.com</div>
                         </div>
 
                         <div class="contact-tile soft-card p-3">
                             <strong><i class="fa-solid fa-phone me-2 text-primary"></i>Phone</strong>
-                            <div class="small-muted mt-1">+62 xxx xxxx xxxx</div>
+                            <div class="small-muted mt-1"><?= e($publicPhone !== '' ? $publicPhone : '-'); ?></div>
                         </div>
 
                         <div class="contact-tile soft-card p-3">
                             <strong><i class="fa-solid fa-location-dot me-2 text-primary"></i>Location</strong>
-                            <div class="small-muted mt-1">Indonesia</div>
+                            <div class="small-muted mt-1"><?= nl2br(e($publicAddress)); ?></div>
                         </div>
 
                         <div class="contact-tile soft-card p-3">
@@ -71,7 +78,7 @@
                         Share your product, export, import, or consulting inquiry and our team will get back to you with the relevant information.
                     </p>
 
-                    <form action="<?= base_url('welcome/send_inquiry'); ?>" method="post">
+                    <form id="inquiry-form" action="<?= base_url('welcome/send_inquiry'); ?>" method="post">
                         <div class="row g-3">
 
                             <div class="col-md-6">
@@ -101,7 +108,7 @@
 
                             <div class="col-12 d-flex flex-wrap gap-3 pt-2">
                                 <button type="submit" class="btn btn-dark rounded-pill px-4">Send Inquiry</button>
-                                <a href="mailto:sales@ucoexportindo.com" class="btn btn-outline-dark rounded-pill px-4">Direct Email</a>
+                                <a href="mailto:<?= e($publicEmail); ?>" class="btn btn-outline-dark rounded-pill px-4">Direct Email</a>
                             </div>
 
                         </div>
@@ -116,7 +123,7 @@
             <p class="text-white-50 mb-4">
                 Contact UCO Exportindo Consulting for commodity inquiries, export coordination, import-export consulting, and long-term business collaboration.
             </p>
-            <a href="mailto:sales@ucoexportindo.com" class="btn btn-warning cta-btn">Send Inquiry Now</a>
+            <a href="mailto:<?= e($publicEmail); ?>" class="btn btn-warning cta-btn">Send Inquiry Now</a>
         </div>
     </div>
 </section>

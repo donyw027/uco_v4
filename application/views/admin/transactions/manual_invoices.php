@@ -6,6 +6,8 @@ function ef($k, $d = '') {
     $currentEdit = $GLOBALS['edit'] ?? null;
     return e(is_array($currentEdit) ? ($currentEdit[$k] ?? $d) : $d);
 }
+$signers = isset($signers) && is_array($signers) ? $signers : [];
+$currentSignerId = is_array($edit) ? (string)($edit['signature_user_id'] ?? '') : '';
 ?>
 <div class="section-block"><div class="section-head"><div><h3>Manual Invoice Management</h3><p>Create, edit, save, and print manual invoices.</p></div><div class="badge-soft badge-soft-primary">Manual Consulting Invoice</div></div>
 <div class="card shadow-sm mb-4"><div class="card-body"><h5 class="mb-1"><?= $edit ? 'Edit Manual Invoice' : 'Create Manual Invoice'; ?></h5>
@@ -24,6 +26,7 @@ function ef($k, $d = '') {
 <div class="col-md-2"><label class="form-label">PPN (%)</label><input type="number" step="0.01" min="0" name="ppn_percent" id="ppn_percent" class="form-control" value="<?= ef('ppn_percent','11'); ?>"></div>
 <div class="col-md-2"><label class="form-label">PPH (%) <small class="text-muted">dikurangi</small></label><input type="number" step="0.01" min="0" name="pph_percent" id="pph_percent" class="form-control" value="<?= ef('pph_percent','2'); ?>"></div>
 <div class="col-md-2"><label class="form-label">Paid Amount</label><input type="number" step="0.01" min="0" name="paid_amount" class="form-control" value="<?= ef('paid_amount','0'); ?>"></div>
+<div class="col-md-4"><label class="form-label">Document Signer</label><select name="signature_user_id" class="form-select"><option value="">Use company default</option><?php foreach($signers as $sg): ?><option value="<?= e($sg['id']); ?>" <?= ($currentSignerId === (string)$sg['id']) ? 'selected' : ''; ?>><?= e($sg['nama']); ?><?= !empty($sg['position']) ? ' - '.e($sg['position']) : ''; ?></option><?php endforeach; ?></select></div>
 </div>
 <div class="table-responsive mt-4"><table class="table table-sm align-middle" id="manual-items-table"><thead><tr><th>Description</th><th width="90">Qty</th><th width="90">Unit</th><th width="140">Unit Price</th><th width="140">Amount</th><th width="60"></th></tr></thead><tbody>
 <?php foreach($items as $it): ?><tr><td><input type="text" name="description[]" class="form-control" value="<?= e($it['description'] ?? ''); ?>" required></td><td><input type="number" step="0.01" min="0" name="qty[]" class="form-control qty-input" value="<?= e($it['qty'] ?? 1); ?>"></td><td><input type="text" name="unit[]" class="form-control" value="<?= e($it['unit'] ?? ''); ?>"></td><td><input type="number" step="0.01" min="0" name="unit_price[]" class="form-control price-input" value="<?= e($it['unit_price'] ?? 0); ?>"></td><td><input type="text" class="form-control item-amount" readonly></td><td><button type="button" class="btn btn-sm btn-danger btn-remove-row">&times;</button></td></tr><?php endforeach; ?>

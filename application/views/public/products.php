@@ -29,10 +29,18 @@
                             </div>
 
                             <div class="text-center px-4 pt-3">
-                                <img src="<?= base_url('assets/img/uco.png'); ?>"
+                                <?php
+                                $productImage = trim((string)($p['image'] ?? ''));
+
+                                $productImageUrl = ($productImage !== '' && file_exists(FCPATH . 'uploads/products/' . $productImage))
+                                    ? base_url('uploads/products/' . $productImage)
+                                    : base_url('assets/img/uco1.png');
+                                ?>
+
+                                <img src="<?= $productImageUrl; ?>"
                                     class="img-fluid"
                                     alt="<?= e($p['product_name']); ?>"
-                                    style="max-height:200px;filter:drop-shadow(0 14px 24px rgba(0,0,0,.14));">
+                                    style="height:200px;width:100%;object-fit:contain;filter:drop-shadow(0 14px 24px rgba(0,0,0,.14));">
                             </div>
 
                             <div class="p-4">

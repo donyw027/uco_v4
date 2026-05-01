@@ -1,3 +1,7 @@
+<?php
+$signatureName = $signature_user['nama'] ?? ($company['signature_name'] ?? '');
+$signatureTitle = $signature_user['position'] ?? ($company['signature_title'] ?? '');
+?>
 <!doctype html>
 <html>
 
@@ -447,8 +451,8 @@
                             <div class="mini-label">Authorized Signature</div>
                             <div style="height:40px;"></div>
                             <div class="sign-box">
-                                <div class="fw-bold"><?= e($company['signature_name'] ?? ''); ?></div>
-                                <div class="text-muted"><?= e($company['signature_title'] ?? ''); ?></div>
+                                <div class="fw-bold"><?= e($signatureName); ?></div>
+                                <div class="text-muted"><?= e($signatureTitle); ?></div>
                             </div>
                         </div>
                     </div>

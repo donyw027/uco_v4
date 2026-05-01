@@ -8,23 +8,27 @@ class Welcome extends MY_Controller
         parent::__construct();
         $this->load->model('Crud_model', 'crud');
         $this->load->model('Inquiry_message_model', 'inq_msg');
+        $this->load->model('Company_model', 'company');
     }
 
     public function index()
     {
         $data['title'] = 'Uco Exportindo Consulting';
+        $data['company'] = $this->company->latest();
         $this->render('public/home', $data, 'public');
     }
 
     public function about()
     {
         $data['title'] = 'About - Uco Exportindo Consulting';
+        $data['company'] = $this->company->latest();
         $this->render('public/about', $data, 'public');
     }
 
     public function products()
     {
         $data['title'] = 'Products - Uco Exportindo Consulting';
+        $data['company'] = $this->company->latest();
         $data['products'] = $this->crud->all('products', 'id ASC');
         $this->render('public/products', $data, 'public');
     }
@@ -32,6 +36,7 @@ class Welcome extends MY_Controller
     public function contact()
     {
         $data['title'] = 'Contact - Uco Exportindo Consulting';
+        $data['company'] = $this->company->latest();
         $this->render('public/contact', $data, 'public');
     }
 

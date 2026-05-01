@@ -57,7 +57,7 @@ $section_desc = $title_map[$slug] ?? 'Kelola master data sistem dengan tampilan 
 
         <div class="collapse <?= $edit ? 'show' : ''; ?>" id="masterFormCollapse">
           <div class="card-body">
-            <form method="post" enctype="multipart/form-data" class="row g-3">
+            <form method="post" class="row g-3">
               <input type="hidden" name="action" value="<?= $edit ? 'update' : 'create'; ?>">
               <?php if ($edit): ?>
                 <input type="hidden" name="id" value="<?= e($edit['id']); ?>">
@@ -250,23 +250,6 @@ $section_desc = $title_map[$slug] ?? 'Kelola master data sistem dengan tampilan 
                   <textarea name="description" class="form-control"><?= e($edit['description'] ?? ''); ?></textarea>
                 </div>
                 <div class="col-md-4">
-                  <label class="form-label">Product Image</label>
-                  <input type="file" name="image" class="form-control" accept="image/*">
-
-                  <?php
-                  $currentProductImage = !empty($edit['image']) && file_exists(FCPATH . 'uploads/products/' . $edit['image'])
-                    ? base_url('uploads/products/' . $edit['image'])
-                    : base_url('assets/img/uco1.png');
-                  ?>
-                  <div class="mt-2 d-flex align-items-center gap-2">
-                    <img src="<?= $currentProductImage; ?>" alt="Product image" style="width:76px;height:58px;object-fit:contain;border:1px solid #e5e7eb;border-radius:12px;padding:5px;background:#fff;">
-                    <div class="small text-muted">
-                      <?= !empty($edit['image']) ? e($edit['image']) : 'Default image: uco1.png'; ?>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="col-md-4">
                   <label class="form-label">Sales Price</label>
                   <input type="number" step="0.01" name="sales_price" class="form-control" value="<?= e($edit['sales_price'] ?? 0); ?>">
                 </div>
@@ -344,7 +327,6 @@ $section_desc = $title_map[$slug] ?? 'Kelola master data sistem dengan tampilan 
               <thead>
                 <tr>
                   <?php if ($slug === 'products'): ?>
-                    <th>Image</th>
                     <th>Code</th>
                     <th>Product</th>
                     <th>UOM</th>
@@ -403,14 +385,6 @@ $section_desc = $title_map[$slug] ?? 'Kelola master data sistem dengan tampilan 
                   <?php else: foreach ($rows as $row): ?>
                     <tr>
                       <?php if ($slug === 'products'): ?>
-                        <?php
-                        $productThumb = !empty($row['image']) && file_exists(FCPATH . 'uploads/products/' . $row['image'])
-                          ? base_url('uploads/products/' . $row['image'])
-                          : base_url('assets/img/uco1.png');
-                        ?>
-                        <td>
-                          <img src="<?= $productThumb; ?>" alt="<?= e($row['product_name'] ?? 'Product'); ?>" style="width:58px;height:46px;object-fit:contain;border:1px solid #e5e7eb;border-radius:10px;padding:4px;background:#fff;">
-                        </td>
                         <td class="fw-semibold"><?= e($row['code']); ?></td>
                         <td>
                           <div class="fw-semibold"><?= e($row['product_name']); ?></div>

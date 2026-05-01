@@ -45,6 +45,7 @@ class Transactions extends MY_Controller
                 'ppn_percent'       => (float)($this->input->post('ppn_percent') ?? 11),
                 'pph_percent'       => (float)($this->input->post('pph_percent') ?? 2),
                 'show_summary'      => $this->input->post('show_summary') ? 1 : 0,
+                'signature_user_id' => (int)$this->input->post('signature_user_id'),
                 'created_by'        => $this->user['id'] ?? null,
             ];
 
@@ -96,6 +97,7 @@ class Transactions extends MY_Controller
 
         $data['page_title'] = 'Inquiries';
         $data['rows'] = $this->manual_inquiry->rows();
+        $data['signers'] = $this->company->signers();
         $data['edit'] = null;
         $data['edit_items'] = [];
         if ($this->input->get('edit')) {
@@ -114,6 +116,7 @@ class Transactions extends MY_Controller
         }
 
         $data['company'] = $this->company->latest();
+        $data['signature_user'] = $this->company->signer($inv['signature_user_id'] ?? 0);
 
         $currency = $this->db->get_where('currencies', [
             'id' => (int)($inv['currency_id'] ?? 0)
@@ -131,6 +134,7 @@ class Transactions extends MY_Controller
     {
         $data['company'] = $this->company->latest();
         $data['inq'] = $this->manual_inquiry->get($id);
+        $data['signature_user'] = $this->company->signer($data['inq']['signature_user_id'] ?? 0);
         $data['items'] = $this->manual_inquiry->items($id);
 
         $this->load->view('admin/transactions/print_manual_inquiry', $data);
@@ -162,6 +166,7 @@ class Transactions extends MY_Controller
 
         $data['company'] = $this->company->latest();
         $data['inq'] = $draft['header'];
+        $data['signature_user'] = $this->company->signer($data['inq']['signature_user_id'] ?? 0);
         $data['items'] = array_values(array_filter($draft['items'], function ($it) {
             return trim((string)$it['description']) !== '';
         }));
@@ -197,6 +202,7 @@ class Transactions extends MY_Controller
                 'notes'                 => $this->input->post('notes', true),
                 'ppn_percent'           => $ppn_percent,
                 'pph_percent'           => $pph_percent,
+                'signature_user_id'     => (int)$this->input->post('signature_user_id'),
                 'created_by'            => $this->user['id'] ?? null,
                 // summary fields
                 'subtotal_amount'       => 0,
@@ -271,6 +277,7 @@ class Transactions extends MY_Controller
         $data = $this->so->reference_data();
         $data['page_title'] = 'Manual Invoices';
         $data['rows'] = $this->manual_inv->rows();
+        $data['signers'] = $this->company->signers();
         $data['next_invoice_no'] = 'AUTO';
         $data['edit'] = null;
         $data['edit_items'] = [];
@@ -353,6 +360,7 @@ class Transactions extends MY_Controller
             'payment_term_text'     => $draft['header']['payment_term_text'] ?? '',
             'incoterm_text'         => $draft['header']['incoterm_text'] ?? '',
             'currency_code'         => $currency['currency_code'] ?? '',
+            'signature_user_id'     => $draft['header']['signature_user_id'] ?? 0,
             'ppn_percent'           => $ppn_percent,
             'pph_percent'           => $pph_percent,
             'subtotal_amount'       => $subtotal_amount,
@@ -364,6 +372,7 @@ class Transactions extends MY_Controller
         ];
 
         $data['items'] = $items;
+        $data['signature_user'] = $this->company->signer($data['inv']['signature_user_id'] ?? 0);
 
         $this->session->unset_userdata('manual_invoice_draft');
         $this->load->view('admin/transactions/print_manual_invoice', $data);

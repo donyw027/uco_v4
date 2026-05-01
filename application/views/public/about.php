@@ -3,7 +3,7 @@
         <span class="section-kicker">About company</span>
         <h1 class="section-title">About UCO Exportindo Consulting</h1>
         <p class="section-text mx-auto" style="max-width:760px;">
-            Reliable Indonesian export consulting and trading partner supporting global business through commodity supply, export coordination, and import-export consulting services.
+            Reliable Indonesian export consulting and trading partner supporting global business through commodity supply, export coordination, and export consulting services.
         </p>
     </div>
 </section>
@@ -19,7 +19,7 @@
                         UCO Exportindo Consulting is an Indonesian export consulting and trading company supporting international buyers and businesses in sourcing products from Indonesia.
                     </p>
                     <p class="section-text">
-                        Our services include export coordination, documentation preparation, shipment readiness, and consulting support for both export and import activities across various commodities, including used cooking oil (UCO).
+                        Our services include export coordination, documentation preparation, shipment readiness, and consulting support for export activities across various commodities, including used cooking oil (UCO).
                     </p>
                     <p class="section-text mb-0">
                         We aim to build long-term global partnerships through reliable communication, structured trade processes, and professional service support.

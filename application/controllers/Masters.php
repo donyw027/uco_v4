@@ -18,9 +18,42 @@ class Masters extends MY_Controller
             'incoterms' => ['table' => 'incoterms', 'title' => 'Incoterms', 'fields' => ['incoterm_code', 'description']],
             'payment_terms' => ['table' => 'payment_terms', 'title' => 'Payment Terms', 'fields' => ['term_name', 'description']],
             'warehouses' => ['table' => 'warehouses', 'title' => 'Warehouses', 'fields' => ['code', 'warehouse_name', 'location', 'is_active']],
-            'users' => ['table' => 'users', 'title' => 'User Management', 'fields' => ['nama', 'username', 'password', 'role', 'is_active']],
-            'products' => ['table' => 'products', 'title' => 'Products', 'fields' => ['code', 'product_name', 'description', 'uom_id', 'sales_price', 'nw_unit', 'gw_unit', 'cbm_unit', 'package_unit', 'is_active']],
+            'users' => ['table' => 'users', 'title' => 'User Management', 'fields' => ['nama', 'username', 'password', 'position', 'role', 'is_active']],
+            'products' => ['table' => 'products', 'title' => 'Products', 'fields' => ['code', 'product_name', 'description', 'image', 'uom_id',  'sales_price', 'nw_unit', 'gw_unit', 'cbm_unit', 'package_unit', 'is_active']],
         ];
+    }
+
+
+    private function handle_product_image_upload()
+    {
+        if (empty($_FILES['image']['name'])) {
+            return null;
+        }
+
+        $uploadDir = FCPATH . 'uploads/products/';
+        if (!is_dir($uploadDir)) {
+            @mkdir($uploadDir, 0777, true);
+        }
+
+        $originalName = (string)$_FILES['image']['name'];
+        $tmpName = (string)$_FILES['image']['tmp_name'];
+        $ext = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
+        $allowed = ['jpg', 'jpeg', 'png', 'webp'];
+
+        if (!in_array($ext, $allowed, true)) {
+            $this->session->set_flashdata('error', 'Format gambar produk harus JPG, JPEG, PNG, atau WEBP.');
+            return null;
+        }
+
+        $filename = 'product_' . date('Ymd_His') . '_' . mt_rand(1000, 9999) . '.' . $ext;
+        $target = $uploadDir . $filename;
+
+        if (is_uploaded_file($tmpName) && move_uploaded_file($tmpName, $target)) {
+            return $filename;
+        }
+
+        $this->session->set_flashdata('error', 'Upload gambar produk gagal. Cek permission folder uploads/products/.');
+        return null;
     }
 
     public function index($slug = 'products')
@@ -41,6 +74,15 @@ class Masters extends MY_Controller
                 if ($slug === 'users' && $id == ($this->user['id'] ?? 0)) {
                     $this->session->set_flashdata('error', 'User login saat ini tidak bisa dihapus.');
                 } else {
+                    if ($slug === 'products') {
+                        $old = $this->crud->get($cfg['table'], $id);
+                        if (!empty($old['image'])) {
+                            $oldPath = FCPATH . 'uploads/products/' . $old['image'];
+                            if (is_file($oldPath)) {
+                                @unlink($oldPath);
+                            }
+                        }
+                    }
                     $this->crud->delete($cfg['table'], $id);
                     $this->session->set_flashdata('success', 'Data berhasil dihapus.');
                 }
@@ -57,6 +99,25 @@ class Masters extends MY_Controller
                     $payload['password'] = password_hash($this->input->post('password'), PASSWORD_DEFAULT);
                 }
             }
+
+            if ($slug === 'products') {
+                $uploadedImage = $this->handle_product_image_upload();
+                if ($uploadedImage !== null) {
+                    if ($action !== 'create') {
+                        $old = $this->crud->get($cfg['table'], $this->input->post('id'));
+                        if (!empty($old['image'])) {
+                            $oldPath = FCPATH . 'uploads/products/' . $old['image'];
+                            if (is_file($oldPath)) {
+                                @unlink($oldPath);
+                            }
+                        }
+                    }
+                    $payload['image'] = $uploadedImage;
+                } else {
+                    unset($payload['image']);
+                }
+            }
+
             if ($action === 'create') {
                 if ($slug === 'users' && empty($payload['password'])) {
                     $payload['password'] = password_hash('admin123', PASSWORD_DEFAULT);

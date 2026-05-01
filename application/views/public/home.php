@@ -11,7 +11,7 @@
                 </h1>
 
                 <p class="hero-text mb-4">
-                    UCO Exportindo Consulting supports international buyers and businesses through export coordination, documentation handling, shipment preparation, and import-export consulting across various commodities, including used cooking oil.
+                    UCO Exportindo Consulting supports international buyers and businesses through export coordination, documentation handling, shipment preparation, and export consulting across various commodities, including used cooking oil.
                 </p>
 
                 <div class="d-flex flex-wrap gap-3 mb-5">
@@ -23,7 +23,7 @@
                     <div class="col-sm-4">
                         <div class="hero-metric">
                             <div class="num">Trade</div>
-                            <div class="small text-white-50">Export coordination and import-export consulting support</div>
+                            <div class="small text-white-50">Export coordination and export consulting support</div>
                         </div>
                     </div>
                     <div class="col-sm-4">
@@ -63,7 +63,7 @@
                             <div>
                                 <h6 class="fw-bold mb-1">Trade consulting</h6>
                                 <div class="section-text">
-                                    Support for import-export activities and business coordination across international markets.
+                                    Support for export activities and business coordination across international markets.
                                 </div>
                             </div>
                         </div>
@@ -89,7 +89,7 @@
     <div class="container">
         <div class="text-center mb-5">
             <span class="section-kicker">Core strengths</span>
-            <h2 class="section-title">Reliable support for export, import, and international trade</h2>
+            <h2 class="section-title">Reliable support for export and international trade</h2>
             <p class="section-text mx-auto" style="max-width:760px;">
                 We help businesses manage export coordination, documentation, commodity sourcing, and consulting support for smoother international trade operations.
             </p>
@@ -245,7 +245,7 @@
             </span>
 
             <h2 class="section-title text-white mb-3">
-                Looking for export, import, or commodity trade support from Indonesia?
+                Looking for export or commodity trade support from Indonesia?
             </h2>
 
             <p class="text-white-50 mb-4">
