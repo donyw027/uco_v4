@@ -2,12 +2,10 @@
 deployment:
   tasks:
     - export DEPLOYPATH=/home/ucop5517/public_html/
-
-    - /bin/rsync -a --delete \
-      --exclude='.git/' \
-      --exclude='.cpanel.yml' \
-      --exclude='.gitignore' \
-      --exclude='application/config/' \
-      --exclude='.htaccess' \
-      --exclude='uploads/' \
-      ./ $DEPLOYPATH
+    - /bin/cp -R application/controllers $DEPLOYPATH/application/
+    - /bin/cp -R application/models $DEPLOYPATH/application/
+    - /bin/cp -R application/views $DEPLOYPATH/application/
+    - /bin/cp -R application/helpers $DEPLOYPATH/application/
+    - /bin/cp -R application/libraries $DEPLOYPATH/application/
+    - /bin/cp -R assets $DEPLOYPATH
+    - /bin/cp index.php $DEPLOYPATH
