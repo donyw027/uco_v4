@@ -43,3 +43,12 @@ $route['fee-slips/print-draft'] = 'fee_slips/print_draft';
 $route['fee_slips/print_only'] = 'fee_slips/print_only';
 $route['fee-slips/print-only'] = 'fee_slips/print_only';
 $route['fee-slips/delete/(:num)'] = 'fee_slips/delete/$1';
+
+$route['work-agreements'] = 'work_agreements/index';
+$route['work-agreements/create'] = 'work_agreements/create';
+$route['work-agreements/store'] = 'work_agreements/store';
+$route['work-agreements/edit/(:num)'] = 'work_agreements/edit/$1';
+$route['work-agreements/update/(:num)'] = 'work_agreements/update/$1';
+$route['work-agreements/delete/(:num)'] = 'work_agreements/delete/$1';
+$route['work-agreements/print/(:num)'] = 'work_agreements/print_agreement/$1';
+$route['work-agreements/print-draft'] = 'work_agreements/print_draft';

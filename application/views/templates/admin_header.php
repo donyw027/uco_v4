@@ -562,6 +562,11 @@ $master_menu_open = $nav_active([
           <span>Invoices</span>
         </a>
 
+        <a class="nav-link <?= $nav_active(['work-agreements']); ?>" href="<?= site_url('work-agreements'); ?>">
+          <i class="bi bi-file-earmark-text"></i>
+          <span>Work Agreements</span>
+        </a>
+
         <a class="nav-link <?= $nav_active(['fee-slips']); ?>" href="<?= site_url('fee-slips'); ?>">
           <i class="bi bi-cash-stack"></i>
           <span>Salary / Fee Slips</span>
